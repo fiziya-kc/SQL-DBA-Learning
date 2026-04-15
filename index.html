@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL DBA Career Path | Learn Database Administration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --accent-blue: #58a6ff;
+            --accent-green: #238636;
+            --accent-orange: #f78166;
+            --accent-purple: #a371f7;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --border: #30363d;
+            --shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; transition: color 0.2s; }
+        a:hover { color: #79c0ff; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0;
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.25rem;
+            color: var(--text-primary); display: flex; align-items: center; gap: 8px;
+        }
+        .logo i { color: var(--accent-blue); }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a { color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+        .nav-links a.active::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 2px; background: var(--accent-blue); border-radius: 2px;
+        }
+
+        .hero {
+            min-height: 100vh; display: flex; align-items: center;
+            padding: 120px 0 80px; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(88, 166, 255, 0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .hero-content h1 { font-size: 3.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 24px; }
+        .hero-content h1 span {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-content p { font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 32px; max-width: 500px; }
+        .hero-buttons { display: flex; gap: 16px; }
+        .btn {
+            padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s; border: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary { background: var(--accent-blue); color: var(--bg-primary); }
+        .btn-primary:hover { background: #79c0ff; transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); transform: translateY(-2px); }
+
+        .hero-visual { position: relative; }
+        .db-illustration { width: 100%; max-width: 500px; margin: 0 auto; display: block; }
+        .floating-badge {
+            position: absolute; background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 8px; padding: 12px 16px; display: flex; align-items: center;
+            gap: 10px; animation: float 3s ease-in-out infinite;
+        }
+        .floating-badge:nth-child(2) { top: 10%; right: -10%; animation-delay: 0s; }
+        .floating-badge:nth-child(3) { bottom: 20%; left: -5%; animation-delay: 1s; }
+        .floating-badge:nth-child(4) { bottom: 5%; right: 5%; animation-delay: 2s; }
+        .badge-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .badge-icon.blue { background: rgba(88, 166, 255, 0.2); color: var(--accent-blue); }
+        .badge-icon.green { background: rgba(35, 134, 54, 0.2); color: var(--accent-green); }
+        .badge-icon.orange { background: rgba(247, 129, 102, 0.2); color: var(--accent-orange); }
+        .badge-text { font-size: 0.85rem; }
+        .badge-text strong { display: block; font-size: 0.9rem; }
+        .badge-text span { color: var(--text-secondary); font-size: 0.75rem; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        section { padding: 100px 0; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 16px; }
+        .section-header p { color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+        .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .role-card {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 12px; padding: 28px; transition: all 0.3s;
+        }
+        .role-card:hover { transform: translateY(-4px); border-color: var(--accent-blue); }
+        .role-card .icon {
+            width: 48px; height: 48px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 16px;
+        }
+        .role-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+        .role-card p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .career-path { position: relative; max-width: 900px; margin: 0 auto; }
+        .career-path::before {
+            content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+            background: var(--border); transform: translateX(-50%);
+        }
+        .career-item { display: flex; align-items: center; margin-bottom: 48px; position: relative; }
+        .career-item:nth-child(even) { flex-direction: row-reverse; }
+        .career-content {
+            width: 45%; background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px; transition: all 0.3s;
+        }
+        .career-content:hover { border-color: var(--accent-blue); transform: scale(1.02); }
+        .career-node {
+            width: 20px; height: 20px; background: var(--accent-blue); border-radius: 50%;
+            position: absolute; left: 50%; transform: translateX(-50%);
+            border: 4px solid var(--bg-primary); z-index: 1;
+        }
+        .career-level { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-blue); margin-bottom: 4px; }
+        .career-content h3 { font-size: 1.2rem; margin-bottom: 8px; }
+        .career-content .salary { color: var(--accent-green); font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
+        .career-content p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        .learning-path { max-width: 900px; margin: 0 auto; }
+        .learning-step {
+            display: flex; gap: 24px; margin-bottom: 32px; position: relative;
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px; transition: all 0.3s;
+        }
+        .learning-step:hover { border-color: var(--accent-blue); transform: translateX(8px); }
+        .step-number {
+            width: 50px; height: 50px; background: var(--accent-blue); color: var(--bg-primary);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-content h3 { font-size: 1.2rem; margin-bottom: 8px; }
+        .step-content > p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 16px; }
+        .step-topics { display: flex; flex-wrap: wrap; gap: 10px; }
+        .topic-link {
+            background: var(--bg-tertiary); padding: 10px 18px; border-radius: 8px;
+            font-size: 0.9rem; color: var(--accent-blue); border: 1px solid var(--border);
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .topic-link:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); transform: translateY(-2px); }
+        .topic-link i { width: 16px; height: 16px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 60px; }
+        .stat-card {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px; text-align: center;
+        }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px; }
+        .stat-label { color: var(--text-secondary); font-size: 0.9rem; }
+        .job-types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .job-type-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+        .job-type-card h4 { font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .job-list { list-style: none; }
+        .job-list li { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .job-list li:last-child { border-bottom: none; }
+        .job-list li span { color: var(--accent-green); font-weight: 600; }
+
+        .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .tool-card {
+            background: var(--bg-secondary); border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px; text-align: center; transition: all 0.3s;
+        }
+        .tool-card:hover { transform: translateY(-4px); border-color: var(--accent-blue); }
+        .tool-icon { width: 56px; height: 56px; background: var(--bg-tertiary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.5rem; }
+        .tool-card h4 { font-size: 1rem; margin-bottom: 6px; }
+        .tool-card p { color: var(--text-secondary); font-size: 0.85rem; }
+
+        .cta-section { background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.1)); border-top: 1px solid var(--border); }
+        .cta-content { text-align: center; max-width: 600px; margin: 0 auto; }
+        .cta-content h2 { font-size: 2.5rem; margin-bottom: 16px; }
+        .cta-content p { color: var(--text-secondary); margin-bottom: 32px; }
+
+        footer { padding: 40px 0; border-top: 1px solid var(--border); text-align: center; }
+        footer p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 1024px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-content p { margin-left: auto; margin-right: auto; }
+            .hero-buttons { justify-content: center; }
+            .hero-visual { display: none; }
+            .role-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .job-types { grid-template-columns: 1fr; }
+            .tools-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .role-grid { grid-template-columns: 1fr; }
+            .career-path::before { left: 25px; }
+            .career-item, .career-item:nth-child(even) { flex-direction: column; align-items: flex-start; padding-left: 60px; }
+            .career-content { width: 100%; }
+            .career-node { left: 25px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .learning-step { flex-direction: column; }
+            section { padding: 60px 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i data-lucide="database"></i>
+                SQLDBA<span style="color: var(--accent-blue)">.learn</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#what-is-dba">What is DBA</a></li>
+                <li><a href="#career-path">Career Path</a></li>
+                <li><a href="#learning">Learn</a></li>
+                <li><a href="#market">Job Market</a></li>
+                <li><a href="#tools">Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <h1>Launch Your Career as a <span>SQL DBA</span></h1>
+                    <p>Master the skills, tools, and knowledge needed to become an in-demand Database Administrator. Your complete guide from beginner to professional.</p>
+                    <div class="hero-buttons">
+                        <a href="#learning" class="btn btn-primary">
+                            <i data-lucide="rocket"></i>
+                            Start Learning
+                        </a>
+                        <a href="#career-path" class="btn btn-secondary">
+                            <i data-lucide="compass"></i>
+                            Explore Career
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <svg class="db-illustration" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="200" cy="80" rx="150" ry="40" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+                        <path d="M50 80V280C50 310 115 340 200 340C285 340 350 310 350 280V80" stroke="#58a6ff" stroke-width="3" fill="none"/>
+                        <path d="M50 80C50 110 115 140 200 140C285 140 350 110 350 80" stroke="#30363d" stroke-width="2" fill="none"/>
+                        <ellipse cx="200" cy="140" rx="150" ry="40" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+                        <ellipse cx="200" cy="200" rx="150" ry="40" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+                        <ellipse cx="200" cy="260" rx="150" ry="40" fill="#21262d" stroke="#30363d" stroke-width="2"/>
+                        <circle cx="200" cy="140" r="8" fill="#58a6ff"/>
+                        <circle cx="200" cy="200" r="8" fill="#238636"/>
+                        <circle cx="200" cy="260" r="8" fill="#f78166"/>
+                        <line x1="208" y1="140" x2="280" y2="140" stroke="#58a6ff" stroke-width="2" stroke-dasharray="4 4"/>
+                        <line x1="208" y1="200" x2="280" y2="200" stroke="#238636" stroke-width="2" stroke-dasharray="4 4"/>
+                        <line x1="208" y1="260" x2="280" y2="260" stroke="#f78166" stroke-width="2" stroke-dasharray="4 4"/>
+                        <rect x="290" y="125" width="80" height="30" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1"/>
+                        <text x="330" y="145" fill="#58a6ff" font-size="10" text-anchor="middle" font-family="JetBrains Mono">SQL</text>
+                        <rect x="290" y="185" width="80" height="30" rx="6" fill="#161b22" stroke="#238636" stroke-width="1"/>
+                        <text x="330" y="205" fill="#238636" font-size="10" text-anchor="middle" font-family="JetBrains Mono">BACKUP</text>
+                        <rect x="290" y="245" width="80" height="30" rx="6" fill="#161b22" stroke="#f78166" stroke-width="1"/>
+                        <text x="330" y="265" fill="#f78166" font-size="10" text-anchor="middle" font-family="JetBrains Mono">OPTIMIZE</text>
+                    </svg>
+                    <div class="floating-badge">
+                        <div class="badge-icon blue"><i data-lucide="trending-up"></i></div>
+                        <div class="badge-text"><strong>92%</strong><span>Job Growth</span></div>
+                    </div>
+                    <div class="floating-badge">
+                        <div class="badge-icon green"><i data-lucide="dollar-sign"></i></div>
+                        <div class="badge-text"><strong>$120K+</strong><span>Avg Salary</span></div>
+                    </div>
+                    <div class="floating-badge">
+                        <div class="badge-icon orange"><i data-lucide="zap"></i></div>
+                        <div class="badge-text"><strong>High</strong><span>Demand</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="what-is-dba">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>What is a SQL DBA?</h2>
+                <p>A SQL Database Administrator is responsible for the design, implementation, maintenance, and security of an organization's database systems.</p>
+            </div>
+            <div class="role-grid">
+                <div class="role-card fade-in">
+                    <div class="icon" style="background: rgba(88, 166, 255, 0.15); color: var(--accent-blue);"><i data-lucide="shield-check"></i></div>
+                    <h3>Data Security</h3>
+                    <p>Implement security measures, manage user permissions, encrypt sensitive data, and ensure compliance with data protection regulations.</p>
+                </div>
+                <div class="role-card fade-in">
+                    <div class="icon" style="background: rgba(35, 134, 54, 0.15); color: var(--accent-green);"><i data-lucide="server"></i></div>
+                    <h3>Database Management</h3>
+                    <p>Install, configure, upgrade, and maintain SQL Server instances. Manage database storage and capacity planning.</p>
+                </div>
+                <div class="role-card fade-in">
+                    <div class="icon" style="background: rgba(247, 129, 102, 0.15); color: var(--accent-orange);"><i data-lucide="backup"></i></div>
+                    <h3>Backup & Recovery</h3>
+                    <p>Design and implement backup strategies, test recovery procedures, and ensure business continuity.</p>
+                </div>
+                <div class="role-card fade-in">
+                    <div class="icon" style="background: rgba(163, 113, 247, 0.15); color: var(--accent-purple);"><i data-lucide="gauge"></i></div>
+                    <h3>Performance Tuning</h3>
+                    <p>Monitor query performance, analyze execution plans, optimize indexes, and troubleshoot bottlenecks.</p>
+                </div>
+                <div class="role-card fade-in">
+                    <div class="icon" style="background: rgba(88, 166, 255, 0.15); color: var(--accent-blue);"><i data-lucide="users"></i></div>
+                    <h3>User Management</h3>
+                    <p>Create and manage database logins, roles, and permissions. Enforce least-privilege principles.</p>
+                </div>
+                <div class="role-card fade-in">
+                    <div class="icon" style="background: rgba(35, 134, 54, 0.15); color: var(--accent-green);"><i data-lucide="file-text"></i></div>
+                    <h3>Documentation</h3>
+                    <p>Maintain technical documentation, database schemas, and operational procedures for knowledge transfer.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="career-path">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Career Path</h2>
+                <p>Your journey from entry-level to senior roles, with salary expectations at each stage.</p>
+            </div>
+            <div class="career-path">
+                <div class="career-item fade-in">
+                    <div class="career-content">
+                        <div class="career-level">Entry Level</div>
+                        <h3>Junior DBA / Database Developer</h3>
+                        <div class="salary">$55,000 - $75,000</div>
+                        <p>Supporting senior DBAs, writing basic SQL queries, assisting with backups, and learning core database concepts.</p>
+                    </div>
+                    <div class="career-node"></div>
+                </div>
+                <div class="career-item fade-in">
+                    <div class="career-content">
+                        <div class="career-level">Mid Level</div>
+                        <h3>SQL DBA / Database Administrator</h3>
+                        <div class="salary">$75,000 - $110,000</div>
+                        <p>Managing production databases, implementing security policies, performance tuning, and handling backup/recovery independently.</p>
+                    </div>
+                    <div class="career-node"></div>
+                </div>
+                <div class="career-item fade-in">
+                    <div class="career-content">
+                        <div class="career-level">Senior Level</div>
+                        <h3>Senior DBA / Lead DBA</h3>
+                        <div class="salary">$110,000 - $145,000</div>
+                        <p>Architecting database solutions, leading teams, mentoring juniors, and strategic planning for data infrastructure.</p>
+                    </div>
+                    <div class="career-node"></div>
+                </div>
+                <div class="career-item fade-in">
+                    <div class="career-content">
+                        <div class="career-level">Expert Level</div>
+                        <h3>Database Architect / Manager</h3>
+                        <div class="salary">$140,000 - $180,000+</div>
+                        <p>Designing enterprise-wide database strategies, cloud migrations, managing DBA teams, and aligning technology with business goals.</p>
+                    </div>
+                    <div class="career-node"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="learning">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Your Learning Path</h2>
+                <p>Click on any topic below to go to its dedicated learning page with detailed explanations and examples.</p>
+            </div>
+            
+            <div class="learning-path">
+                <div class="learning-step fade-in">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>SQL Fundamentals</h3>
+                        <p>Master the basics of SQL including SELECT, INSERT, UPDATE, DELETE, JOINs, and aggregations.</p>
+                        <div class="step-topics">
+                            <a href="topics/select-statement.html" class="topic-link"><i data-lucide="file-text"></i> SELECT Statement</a>
+                            <a href="topics/joins-subqueries.html" class="topic-link"><i data-lucide="git-merge"></i> JOINs & Subqueries</a>
+                            <a href="topics/groupby-aggregates.html" class="topic-link"><i data-lucide="sigma"></i> GROUP BY & Aggregates</a>
+                            <a href="topics/data-types.html" class="topic-link"><i data-lucide="type"></i> Data Types & Schemas</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-step fade-in">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Database Design & Normalization</h3>
+                        <p>Learn how to design efficient database schemas, understand normalization forms, and create proper table relationships.</p>
+                        <div class="step-topics">
+                            <a href="topics/er-diagrams.html" class="topic-link"><i data-lucide="diagram-3"></i> ER Diagrams</a>
+                            <a href="topics/normalization.html" class="topic-link"><i data-lucide="layers"></i> Normalization</a>
+                            <a href="topics/primary-foreign-keys.html" class="topic-link"><i data-lucide="key"></i> Primary/Foreign Keys</a>
+                            <a href="topics/constraints.html" class="topic-link"><i data-lucide="shield"></i> Constraints</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-step fade-in">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>T-SQL Programming</h3>
+                        <p>Deep dive into Transact-SQL: stored procedures, functions, triggers, CTEs, and error handling.</p>
+                        <div class="step-topics">
+                            <a href="topics/stored-procedures.html" class="topic-link"><i data-lucide="package"></i> Stored Procedures</a>
+                            <a href="topics/functions.html" class="topic-link"><i data-lucide="function-square"></i> Functions</a>
+                            <a href="topics/triggers.html" class="topic-link"><i data-lucide="zap"></i> Triggers</a>
+                            <a href="topics/transactions.html" class="topic-link"><i data-lucide="repeat"></i> Transactions</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-step fade-in">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Database Administration Basics</h3>
+                        <p>Learn to install, configure, and manage SQL Server instances with proper security.</p>
+                        <div class="step-topics">
+                            <a href="topics/ssms-basics.html" class="topic-link"><i data-lucide="monitor"></i> SSMS Installation</a>
+                            <a href="topics/instance-configuration.html" class="topic-link"><i data-lucide="settings"></i> Instance Configuration</a>
+                            <a href="topics/user-management.html" class="topic-link"><i data-lucide="users"></i> User Management</a>
+                            <a href="topics/database-security.html" class="topic-link"><i data-lucide="lock"></i> Database Security</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-step fade-in">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Backup, Recovery & High Availability</h3>
+                        <p>Master backup strategies, restore scenarios, and HA solutions like Always On.</p>
+                        <div class="step-topics">
+                            <a href="topics/backup-strategies.html" class="topic-link"><i data-lucide="save"></i> Backup Types</a>
+                            <a href="topics/point-in-time-recovery.html" class="topic-link"><i data-lucide="clock"></i> Point-in-Time Recovery</a>
+                            <a href="topics/high-availability.html" class="topic-link"><i data-lucide="heart-pulse"></i> Always On Availability</a>
+                            <a href="topics/disaster-recovery.html" class="topic-link"><i data-lucide="umbrella"></i> Disaster Recovery</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-step fade-in">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h3>Performance Tuning & Optimization</h3>
+                        <p>Learn to monitor and optimize database performance using execution plans and indexing.</p>
+                        <div class="step-topics">
+                            <a href="topics/execution-plans.html" class="topic-link"><i data-lucide="file-code"></i> Execution Plans</a>
+                            <a href="topics/index-optimization.html" class="topic-link"><i data-lucide="search"></i> Index Optimization</a>
+                            <a href="topics/query-statistics.html" class="topic-link"><i data-lucide="bar-chart"></i> Query Statistics</a>
+                            <a href="topics/database-monitoring.html" class="topic-link"><i data-lucide="activity"></i> Database Monitoring</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="learning-step fade-in">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h3>Cloud & Automation</h3>
+                        <p>Expand into Azure SQL Database, PowerShell scripting, and automation for modern DBA work.</p>
+                        <div class="step-topics">
+                            <a href="topics/azure-sql.html" class="topic-link"><i data-lucide="cloud"></i> Azure SQL</a>
+                            <a href="topics/powershell-dba.html" class="topic-link"><i data-lucide="terminal"></i> PowerShell</a>
+                            <a href="topics/sql-agent-jobs.html" class="topic-link"><i data-lucide="schedule"></i> SQL Agent Jobs</a>
+                            <a href="topics/infrastructure-as-code.html" class="topic-link"><i data-lucide="code"></i> Infrastructure as Code</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="market">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Job Market Overview</h2>
+                <p>The demand for skilled SQL DBAs continues to grow as data becomes increasingly central to business operations.</p>
+            </div>
+            <div class="stats-grid fade-in">
+                <div class="stat-card">
+                    <div class="stat-value">127,400+</div>
+                    <div class="stat-label">Database Admin Jobs in US</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$98,450</div>
+                    <div class="stat-label">Median Annual Salary</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">10%</div>
+                    <div class="stat-label">Projected Growth (2022-2032)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">6,500+</div>
+                    <div class="stat-label">New Jobs Yearly</div>
+                </div>
+            </div>
+            <div class="job-types fade-in">
+                <div class="job-type-card">
+                    <h4><i data-lucide="building" style="color: var(--accent-blue);"></i> Enterprise & Corporate</h4>
+                    <ul class="job-list">
+                        <li>Financial Services <span>$105K-$140K</span></li>
+                        <li>Healthcare & Insurance <span>$95K-$125K</span></li>
+                        <li>Technology Companies <span>$100K-$150K</span></li>
+                        <li>Government & Defense <span>$85K-$115K</span></li>
+                    </ul>
+                </div>
+                <div class="job-type-card">
+                    <h4><i data-lucide="briefcase" style="color: var(--accent-green);"></i> Common Job Titles</h4>
+                    <ul class="job-list">
+                        <li>SQL Server DBA <span>Most Common</span></li>
+                        <li>Oracle DBA <span>High Demand</span></li>
+                        <li>Cloud DBA <span>Growing Fast</span></li>
+                        <li>MySQL/PostgreSQL DBA <span>Open Source</span></li>
+                    </ul>
+                </div>
+                <div class="job-type-card">
+                    <h4><i data-lucide="map-pin" style="color: var(--accent-orange);"></i> Top Hiring Locations</h4>
+                    <ul class="job-list">
+                        <li>New York, NY <span>High Demand</span></li>
+                        <li>San Francisco, CA <span>Tech Hub</span></li>
+                        <li>Chicago, IL <span>Finance</span></li>
+                        <li>Remote (Anywhere) <span>Trending</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tools">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Tools & Technologies</h2>
+                <p>Get familiar with these essential tools used by professional SQL DBAs.</p>
+            </div>
+            <div class="tools-grid fade-in">
+                <div class="tool-card"><div class="tool-icon">💾</div><h4>SQL Server</h4><p>Microsoft's flagship RDBMS</p></div>
+                <div class="tool-card"><div class="tool-icon">🔧</div><h4>SSMS</h4><p>SQL Server Management Studio</p></div>
+                <div class="tool-card"><div class="tool-icon">☁️</div><h4>Azure Portal</h4><p>Cloud database management</p></div>
+                <div class="tool-card"><div class="tool-icon">📊</div><h4>dbatools</h4><p>PowerShell DBA toolkit</p></div>
+                <div class="tool-card"><div class="tool-icon">🐘</div><h4>PostgreSQL</h4><p>Popular open-source RDBMS</p></div>
+                <div class="tool-card"><div class="tool-icon">🐬</div><h4>MySQL</h4><p>Widely-used open-source DB</p></div>
+                <div class="tool-card"><div class="tool-icon">🍃</div><h4>MongoDB</h4><p>NoSQL document database</p></div>
+                <div class="tool-card"><div class="tool-icon">📈</div><h4>Grafana</h4><p>Database monitoring & alerting</p></div>
+                <div class="tool-card"><div class="tool-icon">🔄</div><h4>Redgate</h4><p>Database DevOps tools</p></div>
+                <div class="tool-card"><div class="tool-icon">🐳</div><h4>Docker</h4><p>Containerized databases</p></div>
+                <div class="tool-card"><div class="tool-icon">🔍</div><h4>dbForge</h4><p>SQL query & administration</p></div>
+                <div class="tool-card"><div class="tool-icon">⚡</div><h4>Azure Data Studio</h4><p>Cross-platform SQL tool</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content fade-in">
+                <h2>Start Your DBA Journey Today</h2>
+                <p>Join thousands of aspiring database administrators who have launched successful careers. Get exclusive learning resources and industry insights.</p>
+                <a href="#learning" class="btn btn-primary" style="margin-top: 20px;"><i data-lucide="rocket"></i> Begin Learning Now</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>SQLDBA.learn — Your gateway to a rewarding database administration career</p>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

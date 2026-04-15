@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .comment { color: #8b949e; font-style: italic; } .code-block .string { color: #a5d6ff; } .code-block .number { color: #79c0ff; }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .tip-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .tip-box p { margin: 0; color: var(--text-primary); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>Transactions</span></h1>
+            <p>Ensuring data integrity by grouping related operations.</p>
+            <div class="breadcrumb">Home > Learning Path > T-SQL Programming > <span style="color: var(--text-primary);">Transactions</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="repeat"></i> What is a Transaction?</h2>
+            <p>A transaction is a group of operations performed as a single unit of work. All operations must succeed for the transaction to commit, or all fail if any operation fails (rollback).</p>
+
+            <div class="key-points">
+                <h4>ACID Properties</h4>
+                <ul>
+                    <li><strong>Atomicity</strong> - All or nothing - transactions are indivisible</li>
+                    <li><strong>Consistency</strong> - Database moves from one valid state to another</li>
+                    <li><strong>Isolation</strong> - Concurrent transactions don't interfere</li>
+                    <li><strong>Durability</strong> - Committed changes survive system failures</li>
+                </ul>
+            </div>
+
+            <h2><i data-lucide="code"></i> Transaction Syntax</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Basic transaction</span>
+<span class="keyword">BEGIN TRANSACTION</span>;
+
+<span class="keyword">UPDATE</span> accounts <span class="keyword">SET</span> balance = balance - <span class="number">100</span> <span class="keyword">WHERE</span> account_id = <span class="number">1</span>;
+<span class="keyword">UPDATE</span> accounts <span class="keyword">SET</span> balance = balance + <span class="number">100</span> <span class="keyword">WHERE</span> account_id = <span class="number">2</span>;
+
+<span class="keyword">COMMIT</span>;
+
+<span class="comment">-- Transaction with error handling</span>
+<span class="keyword">BEGIN TRY</span>
+    <span class="keyword">BEGIN TRANSACTION</span>;
+    
+    <span class="keyword">INSERT INTO</span> orders (customer_id, total) <span class="keyword">VALUES</span> (<span class="number">100</span>, <span class="number">500</span>);
+    <span class="keyword">UPDATE</span> inventory <span class="keyword">SET</span> quantity = quantity - <span class="number">1</span> <span class="keyword">WHERE</span> product_id = <span class="number">50</span>;
+    
+    <span class="keyword">COMMIT</span>;
+<span class="keyword">END TRY</span>
+<span class="keyword">BEGIN CATCH</span>
+    <span class="keyword">ROLLBACK</span>;
+    <span class="keyword">SELECT</span> ERROR_MESSAGE() <span class="keyword">AS</span> ErrorMessage;
+<span class="keyword">END CATCH</span></pre>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Tip:</strong> Keep transactions short. Long-running transactions can cause blocking and lock contention. Always handle errors with TRY/CATCH and rollback on failure.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="triggers.html" class="nav-btn"><i data-lucide="arrow-left"></i> Triggers</a>
+                <a href="ssms-basics.html" class="nav-btn next">SSMS Installation <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

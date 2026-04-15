@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ER Diagrams - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+        .content h2:first-child { margin-top: 0; }
+        .content h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .concept-visual { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin: 24px 0; text-align: center; }
+        .concept-visual svg { max-width: 100%; height: auto; }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .tip-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .tip-box p { margin: 0; color: var(--text-primary); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+        .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+        .card h4 { color: var(--accent-purple); margin-bottom: 8px; }
+        .card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>ER Diagrams</span></h1>
+            <p>Entity-Relationship diagrams: Visual tools for designing and representing database structure and relationships.</p>
+            <div class="breadcrumb">Home > Learning Path > Database Design > <span style="color: var(--text-primary);">ER Diagrams</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="book-open"></i> What is an ER Diagram?</h2>
+            <p>ER (Entity-Relationship) diagrams are visual tools used to design and represent database schemas. They show entities (tables), their attributes (columns), and the relationships between them.</p>
+
+            <div class="concept-visual">
+                <svg width="700" height="250" viewBox="0 0 700 250">
+                    <rect x="40" y="30" width="200" height="180" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+                    <text x="140" y="55" fill="#58a6ff" font-size="14" text-anchor="middle" font-weight="bold" font-family="JetBrains Mono">EMPLOYEE</text>
+                    <line x1="50" y1="70" x2="230" y2="70" stroke="#30363d"/>
+                    <text x="60" y="92" fill="#c9d1d9" font-size="11">PK employee_id</text>
+                    <text x="60" y="112" fill="#c9d1d9" font-size="11">first_name</text>
+                    <text x="60" y="132" fill="#c9d1d9" font-size="11">last_name</text>
+                    <text x="60" y="152" fill="#8b949e" font-size="11">FK department_id</text>
+                    <text x="60" y="172" fill="#c9d1d9" font-size="11">salary</text>
+                    <text x="60" y="192" fill="#c9d1d9" font-size="11">hire_date</text>
+                    
+                    <rect x="460" y="50" width="200" height="140" rx="8" fill="#161b22" stroke="#238636" stroke-width="2"/>
+                    <text x="560" y="75" fill="#238636" font-size="14" text-anchor="middle" font-weight="bold" font-family="JetBrains Mono">DEPARTMENT</text>
+                    <line x1="470" y1="90" x2="650" y2="90" stroke="#30363d"/>
+                    <text x="480" y="112" fill="#c9d1d9" font-size="11">PK department_id</text>
+                    <text x="480" y="132" fill="#c9d1d9" font-size="11">department_name</text>
+                    <text x="480" y="152" fill="#c9d1d9" font-size="11">location</text>
+                    <text x="480" y="172" fill="#c9d1d9" font-size="11">budget</text>
+                    
+                    <path d="M240 130 L460 130" stroke="#f78166" stroke-width="2"/>
+                    <text x="350" y="115" fill="#f78166" font-size="12" text-anchor="middle">1:N</text>
+                    <polygon points="250,125 260,130 250,135" fill="#f78166"/>
+                    <polygon points="450,125 460,130 450,135" fill="#f78166"/>
+                    <text x="350" y="150" fill="#8b949e" font-size="10" text-anchor="middle">works in</text>
+                </svg>
+            </div>
+
+            <h2><i data-lucide="shapes"></i> ER Diagram Components</h2>
+            <div class="card-grid">
+                <div class="card"><h4>Rectangle</h4><p>Entity (Table)</p></div>
+                <div class="card"><h4>Ellipse</h4><p>Attribute (Column)</p></div>
+                <div class="card"><h4>Diamond</h4><p>Relationship</p></div>
+                <div class="card"><h4>Underline</h4><p>Primary Key</p></div>
+                <div class="card"><h4>Dashed Line</h4><p>Non-identifying</p></div>
+                <div class="card"><h4>Solid Line</h4><p>Identifying</p></div>
+            </div>
+
+            <h2><i data-lucide="link"></i> Relationship Cardinality</h2>
+            <div class="card-grid">
+                <div class="card"><h4>1:1 (One-to-One)</h4><p>Each record relates to exactly one record</p></div>
+                <div class="card"><h4>1:N (One-to-Many)</h4><p>One record relates to many records</p></div>
+                <div class="card"><h4>N:N (Many-to-Many)</h4><p>Many records relate to many records</p></div>
+            </div>
+
+            <div class="concept-visual">
+                <svg width="700" height="150" viewBox="0 0 700 150">
+                    <text x="120" y="40" fill="#c9d1d9" font-size="14" text-anchor="middle" font-family="Inter">1:1 Example</text>
+                    <rect x="30" y="60" width="80" height="50" rx="4" fill="#161b22" stroke="#58a6ff"/>
+                    <text x="70" y="90" fill="#c9d1d9" font-size="10" text-anchor="middle">Person</text>
+                    <rect x="130" y="60" width="80" height="50" rx="4" fill="#161b22" stroke="#238636"/>
+                    <text x="170" y="90" fill="#c9d1d9" font-size="10" text-anchor="middle">Passport</text>
+                    <path d="M110 85 L130 85" stroke="#f78166" stroke-width="2"/>
+                    
+                    <text x="350" y="40" fill="#c9d1d9" font-size="14" text-anchor="middle" font-family="Inter">1:N Example</text>
+                    <rect x="250" y="60" width="80" height="50" rx="4" fill="#161b22" stroke="#58a6ff"/>
+                    <text x="290" y="90" fill="#c9d1d9" font-size="10" text-anchor="middle">Department</text>
+                    <rect x="370" y="60" width="80" height="50" rx="4" fill="#161b22" stroke="#238636"/>
+                    <text x="410" y="90" fill="#c9d1d9" font-size="10" text-anchor="middle">Employee</text>
+                    <path d="M330 85 L370 85" stroke="#f78166" stroke-width="2"/>
+                    <text x="350" y="75" fill="#f78166" font-size="10" text-anchor="middle">1</text>
+                    <text x="350" y="100" fill="#f78166" font-size="10" text-anchor="middle">N</text>
+                    
+                    <text x="580" y="40" fill="#c9d1d9" font-size="14" text-anchor="middle" font-family="Inter">N:N Example</text>
+                    <rect x="480" y="60" width="80" height="50" rx="4" fill="#161b22" stroke="#58a6ff"/>
+                    <text x="520" y="90" fill="#c9d1d9" font-size="10" text-anchor="middle">Student</text>
+                    <rect x="600" y="60" width="80" height="50" rx="4" fill="#161b22" stroke="#238636"/>
+                    <text x="640" y="90" fill="#c9d1d9" font-size="10" text-anchor="middle">Course</text>
+                    <rect x="545" y="110" width="80" height="30" rx="4" fill="#161b22" stroke="#a371f7"/>
+                    <text x="585" y="130" fill="#c9d1d9" font-size="9" text-anchor="middle">Enrollment</text>
+                </svg>
+            </div>
+
+            <h2><i data-lucide="box"></i> Real-World Example: E-Commerce Database</h2>
+            <div class="concept-visual">
+                <svg width="750" height="400" viewBox="0 0 750 400">
+                    <rect x="50" y="20" width="150" height="100" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+                    <text x="125" y="40" fill="#58a6ff" font-size="12" text-anchor="middle" font-family="JetBrains Mono">customers</text>
+                    <text x="60" y="60" fill="#8b949e" font-size="9">PK customer_id</text>
+                    <text x="60" y="75" fill="#c9d1d9" font-size="9">name, email, phone</text>
+                    <text x="60" y="90" fill="#c9d1d9" font-size="9">address, created_at</text>
+                    
+                    <rect x="300" y="20" width="150" height="100" rx="8" fill="#161b22" stroke="#238636" stroke-width="2"/>
+                    <text x="375" y="40" fill="#238636" font-size="12" text-anchor="middle" font-family="JetBrains Mono">products</text>
+                    <text x="310" y="60" fill="#8b949e" font-size="9">PK product_id</text>
+                    <text x="310" y="75" fill="#c9d1d9" font-size="9">name, description</text>
+                    <text x="310" y="90" fill="#c9d1d9" font-size="9">price, stock_qty</text>
+                    
+                    <rect x="550" y="20" width="150" height="100" rx="8" fill="#161b22" stroke="#f78166" stroke-width="2"/>
+                    <text x="625" y="40" fill="#f78166" font-size="12" text-anchor="middle" font-family="JetBrains Mono">orders</text>
+                    <text x="560" y="60" fill="#8b949e" font-size="9">PK order_id</text>
+                    <text x="560" y="75" fill="#c9d1d9" font-size="9">FK customer_id</text>
+                    <text x="560" y="90" fill="#c9d1d9" font-size="9">order_date, status</text>
+                    
+                    <rect x="300" y="180" width="150" height="100" rx="8" fill="#161b22" stroke="#a371f7" stroke-width="2"/>
+                    <text x="375" y="200" fill="#a371f7" font-size="12" text-anchor="middle" font-family="JetBrains Mono">order_items</text>
+                    <text x="310" y="220" fill="#8b949e" font-size="9">PK order_item_id</text>
+                    <text x="310" y="235" fill="#8b949e" font-size="9">FK order_id</text>
+                    <text x="310" y="250" fill="#8b949e" font-size="9">FK product_id, qty</text>
+                    
+                    <rect x="550" y="180" width="150" height="100" rx="8" fill="#161b22" stroke="#ff7b72" stroke-width="2"/>
+                    <text x="625" y="200" fill="#ff7b72" font-size="12" text-anchor="middle" font-family="JetBrains Mono">categories</text>
+                    <text x="560" y="220" fill="#8b949e" font-size="9">PK category_id</text>
+                    <text x="560" y="235" fill="#c9d1d9" font-size="9">name, description</text>
+                    <text x="560" y="250" fill="#8b949e" font-size="9">FK parent_id (self)</text>
+                    
+                    <rect x="300" y="320" width="150" height="70" rx="8" fill="#161b22" stroke="#238636" stroke-width="2"/>
+                    <text x="375" y="340" fill="#238636" font-size="12" text-anchor="middle" font-family="JetBrains Mono">product_categories</text>
+                    <text x="310" y="360" fill="#8b949e" font-size="9">FK product_id</text>
+                    <text x="310" y="375" fill="#8b949e" font-size="9">FK category_id</text>
+                    
+                    <path d="M125 120 L125 150 L375 180" stroke="#58a6ff" stroke-width="1.5" fill="none"/>
+                    <text x="180" y="145" fill="#58a6ff" font-size="8">1:N</text>
+                    
+                    <path d="M625 120 L625 150 L450 180" stroke="#f78166" stroke-width="1.5" fill="none"/>
+                    <text x="570" y="145" fill="#f78166" font-size="8">1:N</text>
+                    
+                    <path d="M450 100 L450 120" stroke="#a371f7" stroke-width="1.5" fill="none"/>
+                    <path d="M450 100 L300 120" stroke="#a371f7" stroke-width="1.5" fill="none"/>
+                    <path d="M450 100 L600 120" stroke="#a371f7" stroke-width="1.5" fill="none"/>
+                    <text x="470" y="105" fill="#a371f7" font-size="8">N</text>
+                    <text x="420" y="105" fill="#a371f7" font-size="8">N</text>
+                    <text x="580" y="105" fill="#a371f7" font-size="8">N</text>
+                    <text x="490" y="115" fill="#a371f7" font-size="8">N</text>
+                </svg>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Tools:</strong> Use dbdiagram.io, Lucidchart, Draw.io, or SQL Server's Database Diagram feature to create professional ER diagrams. These tools can often generate SQL from your diagrams!</p>
+                </div>
+            </div>
+
+            <h2><i data-lucide="pen-tool"></i> Best Practices</h2>
+            <div class="key-points">
+                <h4>ER Diagram Design Guidelines</h4>
+                <ul>
+                    <li>Identify all <strong>entities</strong> (nouns) in your system - these become tables</li>
+                    <li>Identify <strong>relationships</strong> (verbs) between entities</li>
+                    <li>Determine <strong>cardinality</strong> (1:1, 1:N, N:N) for each relationship</li>
+                    <li>Identify <strong>attributes</strong> for each entity - these become columns</li>
+                    <li>Mark <strong>primary keys</strong> clearly</li>
+                    <li>Document <strong>business rules</strong> in notes</li>
+                    <li>Use consistent naming conventions</li>
+                </ul>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="data-types.html" class="nav-btn"><i data-lucide="arrow-left"></i> Data Types</a>
+                <a href="normalization.html" class="nav-btn next">Normalization <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

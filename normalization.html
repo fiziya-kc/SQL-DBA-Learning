@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Normalization - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+        .content h2:first-child { margin-top: 0; }
+        .content h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .string { color: #a5d6ff; } .code-block .number { color: #79c0ff; } .code-block .comment { color: #8b949e; font-style: italic; }
+        .tip-box, .warning-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; }
+        .tip-box { background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .warning-box { background: rgba(247, 129, 102, 0.1); border: 1px solid var(--accent-orange); }
+        .warning-box i { color: var(--accent-orange); flex-shrink: 0; }
+        .tip-box p, .warning-box p { margin: 0; color: var(--text-primary); }
+        .concept-visual { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin: 24px 0; }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .nf-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; }
+        .nf-card h3 { color: var(--accent-green); margin-bottom: 12px; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>Database Normalization</span></h1>
+            <p>Learn to organize database tables to reduce redundancy and improve data integrity through normalization.</p>
+            <div class="breadcrumb">Home > Learning Path > Database Design > <span style="color: var(--text-primary);">Normalization</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="book-open"></i> What is Normalization?</h2>
+            <p>Normalization is the process of organizing data in a database to minimize redundancy and dependency. It involves dividing large tables into smaller, related tables and defining relationships between them.</p>
+
+            <div class="tip-box">
+                <i data-lucide="target"></i>
+                <div>
+                    <p><strong>Goal:</strong> Eliminate redundant data, ensure data dependencies make sense, and simplify data management.</p>
+                </div>
+            </div>
+
+            <h2><i data-lucide="layers"></i> Normal Forms (NF)</h2>
+            <p>Normal forms are a series of guidelines that help organize your database structure. Each form builds upon the previous one.</p>
+
+            <div class="nf-card">
+                <h3>1NF - First Normal Form</h3>
+                <p>The most fundamental level of normalization. A table is in 1NF if:</p>
+                <div class="key-points">
+                    <ul>
+                        <li>Each cell contains a single, atomic value (no repeating groups)</li>
+                        <li>Each column contains values of the same data type</li>
+                        <li>Each column has a unique name</li>
+                        <li>The order of rows and columns doesn't matter</li>
+                    </ul>
+                </div>
+                <div class="code-block">
+<pre><span class="comment">-- VIOLATION of 1NF: Multiple values in one cell</span>
+<span class="comment">-- Table: customers</span>
+customer_id | customer_name | phone_numbers
+1           | John Smith    | 555-1234, 555-5678
+
+<span class="comment">-- CORRECT: 1NF compliant</span>
+customer_id | customer_name | phone_number
+1           | John Smith    | 555-1234
+1           | John Smith    | 555-5678</pre>
+                </div>
+            </div>
+
+            <div class="nf-card">
+                <h3>2NF - Second Normal Form</h3>
+                <p>A table is in 2NF if it's in 1NF AND has no partial dependencies:</p>
+                <div class="key-points">
+                    <ul>
+                        <li>Must be in 1NF first</li>
+                        <li>No column depends on only part of a composite primary key</li>
+                        <li>All non-key columns must depend on the entire primary key</li>
+                    </ul>
+                </div>
+                <div class="code-block">
+<pre><span class="comment">-- VIOLATION of 2NF: Partial dependency</span>
+<span class="comment">-- Table: order_items (composite key: order_id, product_id)</span>
+order_id | product_id | product_name | quantity | price
+1        | 100        | Widget       | 2        | 9.99
+
+<span class="comment">-- product_name depends only on product_id, not order_id!</span>
+
+<span class="comment">-- CORRECT: Split into two tables</span>
+<span class="comment">-- Table: order_items</span>
+order_id | product_id | quantity
+1        | 100       | 2
+
+<span class="comment">-- Table: products</span>
+product_id | product_name | price
+100        | Widget       | 9.99</pre>
+                </div>
+            </div>
+
+            <div class="nf-card">
+                <h3>3NF - Third Normal Form</h3>
+                <p>A table is in 3NF if it's in 2NF AND has no transitive dependencies:</p>
+                <div class="key-points">
+                    <ul>
+                        <li>Must be in 2NF first</li>
+                        <li>No column depends on another non-key column</li>
+                        <li>Non-key columns don't depend on other non-key columns</li>
+                    </ul>
+                </div>
+                <div class="code-block">
+<pre><span class="comment">-- VIOLATION of 3NF: Transitive dependency</span>
+<span class="comment">-- Table: employees</span>
+emp_id | name   | department_id | department_name | department_location
+1      | John   | 10            | Sales          | New York
+
+<span class="comment">-- department_name depends on department_id, which depends on emp_id</span>
+<span class="comment">-- This creates redundancy and update anomalies</span>
+
+<span class="comment">-- CORRECT: Split into two tables</span>
+<span class="comment">-- Table: employees</span>
+emp_id | name   | department_id
+1      | John   | 10
+
+<span class="comment">-- Table: departments</span>
+department_id | department_name | department_location
+10            | Sales          | New York</pre>
+                </div>
+            </div>
+
+            <h2><i data-lucide="scale"></i> Higher Normal Forms (BCNF, 4NF, 5NF)</h2>
+            <div class="key-points">
+                <h4>Beyond 3NF</h4>
+                <ul>
+                    <li><strong>BCNF (Boyce-Codd NF)</strong> - Stricter version of 3NF. Every determinant must be a candidate key.</li>
+                    <li><strong>4NF</strong> - No multi-valued dependencies. Each record has independent many-to-many relationships.</li>
+                    <li><strong>5NF</strong> - Join dependency cannot be decomposed further. Complex scenarios with multiple overlapping join constraints.</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <i data-lucide="alert-triangle"></i>
+                <div>
+                    <p><strong>Balance:</strong> While normalization reduces redundancy, over-normalization can hurt performance. In read-heavy applications (data warehouses, reporting databases), some denormalization may be beneficial for speed.</p>
+                </div>
+            </div>
+
+            <h2><i data-lucide="git-merge"></i> Denormalization</h2>
+            <p>Denormalization is the intentional process of adding redundant data to improve read performance. It's common in:</p>
+            <div class="key-points">
+                <ul>
+                    <li><strong>Data warehouses</strong> - For reporting and analytics</li>
+                    <li><strong>Caching layers</strong> - Redis, Memcached</li>
+                    <li><strong>Read replicas</strong> - Pre-computed aggregates</li>
+                    <li><strong>Star schemas</strong> - Fact and dimension tables</li>
+                </ul>
+            </div>
+
+            <div class="concept-visual">
+                <h3 style="color: var(--text-primary); margin-bottom: 16px;">Normalization vs Denormalization</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <th style="text-align: left; padding: 12px; color: var(--accent-blue);">Normalized</th>
+                        <th style="text-align: left; padding: 12px; color: var(--accent-green);">Denormalized</th>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 12px; color: var(--text-secondary);">More tables, less redundancy</td>
+                        <td style="padding: 12px; color: var(--text-secondary);">Fewer tables, more redundancy</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 12px; color: var(--text-secondary);">Better for write operations</td>
+                        <td style="padding: 12px; color: var(--text-secondary);">Better for read operations</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 12px; color: var(--text-secondary);">Reduced storage (usually)</td>
+                        <td style="padding: 12px; color: var(--text-secondary);">Increased storage needs</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; color: var(--text-secondary);">OLTP systems</td>
+                        <td style="padding: 12px; color: var(--text-secondary);">OLAP / Reporting systems</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="er-diagrams.html" class="nav-btn"><i data-lucide="arrow-left"></i> ER Diagrams</a>
+                <a href="primary-foreign-keys.html" class="nav-btn next">Primary/Foreign Keys <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

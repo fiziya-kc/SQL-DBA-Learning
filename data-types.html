@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Types & Schemas - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        a:hover { color: #79c0ff; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+        .content h2:first-child { margin-top: 0; }
+        .content h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .string { color: #a5d6ff; } .code-block .number { color: #79c0ff; } .code-block .comment { color: #8b949e; font-style: italic; } .code-block .function { color: #d2a8ff; }
+        .tip-box, .warning-box, .info-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; }
+        .tip-box { background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .warning-box { background: rgba(247, 129, 102, 0.1); border: 1px solid var(--accent-orange); }
+        .warning-box i { color: var(--accent-orange); flex-shrink: 0; }
+        .info-box { background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent-blue); }
+        .info-box i { color: var(--accent-blue); flex-shrink: 0; }
+        .tip-box p, .warning-box p, .info-box p { margin: 0; color: var(--text-primary); }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+        .type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 20px 0; }
+        .type-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+        .type-card h4 { color: var(--accent-purple); margin-bottom: 8px; font-size: 1rem; }
+        .type-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>Data Types</span> & Schemas</h1>
+            <p>Understanding SQL Server data types and database schema design for efficient and reliable databases.</p>
+            <div class="breadcrumb">Home > Learning Path > SQL Fundamentals > <span style="color: var(--text-primary);">Data Types & Schemas</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="type"></i> Why Data Types Matter</h2>
+            <p>Choosing the correct data type is crucial for database performance, storage efficiency, and data integrity. The right data type ensures your database runs fast and your data remains accurate.</p>
+
+            <div class="warning-box">
+                <i data-lucide="alert-triangle"></i>
+                <div>
+                    <p><strong>Critical:</strong> NEVER use FLOAT or REAL for storing monetary values. Use DECIMAL instead. Floating-point numbers can cause rounding errors that are unacceptable in financial calculations.</p>
+                </div>
+            </div>
+
+            <h2><i data-lucide="hash"></i> Numeric Data Types</h2>
+            <div class="type-grid">
+                <div class="type-card"><h4>INT / INTEGER</h4><p>Whole numbers from -2,147,483,648 to 2,147,483,647. 4 bytes. Use for most IDs and counts.</p></div>
+                <div class="type-card"><h4>BIGINT</h4><p>Large whole numbers. From -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807. 8 bytes.</p></div>
+                <div class="type-card"><h4>SMALLINT</h4><p>Small whole numbers from -32,768 to 32,767. 2 bytes. Use for limited range values.</p></div>
+                <div class="type-card"><h4>TINYINT</h4><p>Very small numbers from 0 to 255. 1 byte. Great for status codes and flags.</p></div>
+                <div class="type-card"><h4>DECIMAL(p,s) / NUMERIC</h4><p>Exact decimal numbers. p = precision (total digits), s = scale (decimal places). Use for money.</p></div>
+                <div class="type-card"><h4>MONEY / SMALLMONEY</h4><p>Currency values. MONEY: -922,337,203,685,477.5808 to 922,337,203,685,477.5807. 8 bytes.</p></div>
+                <div class="type-card"><h4>FLOAT / REAL</h4><p>Approximate numeric for scientific calculations. NOT for money! Can cause rounding errors.</p></div>
+                <div class="type-card"><h4>BIT</h4><p>Integer type that can take values 0, 1, or NULL. Great for boolean/toggle values.</p></div>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- Numeric examples</span>
+<span class="comment">-- DECIMAL: DECIMAL(10,2) = 10 total digits, 2 after decimal</span>
+product_price   <span class="keyword">DECIMAL</span>(<span class="number">10</span>, <span class="number">2</span>)   <span class="comment">-- 99999999.99 max</span>
+tax_rate        <span class="keyword">DECIMAL</span>(<span class="number">5</span>, <span class="number">4</span>)     <span class="comment">-- 999.9999 max</span>
+<span class="comment">-- INT with IDENTITY for auto-increment</span>
+customer_id     <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>
+<span class="comment">-- BIT for boolean flags</span>
+is_active       <span class="keyword">BIT</span> <span class="keyword">DEFAULT</span> <span class="number">1</span>
+is_deleted      <span class="keyword">BIT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span></pre>
+            </div>
+
+            <h2><i data-lucide="text"></i> String/Character Data Types</h2>
+            <div class="type-grid">
+                <div class="type-card"><h4>CHAR(n)</h4><p>Fixed-length string. Always uses n bytes. Pad with spaces if shorter. Best when data is consistent length.</p></div>
+                <div class="type-card"><h4>VARCHAR(n)</h4><p>Variable-length up to n. Uses only what's needed. Standard choice for most text.</p></div>
+                <div class="type-card"><h4>VARCHAR(MAX)</h4><p>Variable-length up to 2GB. Use instead of deprecated TEXT. Stores large text documents.</p></div>
+                <div class="type-card"><h4>NVARCHAR(n)</h4><p>Unicode variable-length. Use for international/multilingual data. Each char = 2 bytes.</p></div>
+                <div class="type-card"><h4>NVARCHAR(MAX)</h4><p>Unicode large text. For storing large Unicode content like XML, JSON, or long text.</p></div>
+                <div class="type-card"><h4>NCHAR(n)</h4><p>Fixed-length Unicode. Always uses n*2 bytes. Useful for codes that are always same length.</p></div>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- String type examples</span>
+<span class="comment">-- Fixed length for codes that are always same length</span>
+country_code    <span class="keyword">CHAR</span>(<span class="number">2</span>)          <span class="comment">-- 'US', 'UK', 'DE' - always 2 chars</span>
+postal_code     <span class="keyword">CHAR</span>(<span class="number">10</span>)         <span class="comment">-- Always padded to 10 chars</span>
+
+<span class="comment">-- Variable length for names and descriptions</span>
+first_name      <span class="keyword">NVARCHAR</span>(<span class="number">50</span>)       <span class="comment">-- Up to 50 Unicode chars</span>
+email           <span class="keyword">NVARCHAR</span>(<span class="number">100</span>)      <span class="comment">-- Email addresses</span>
+comments        <span class="keyword">NVARCHAR</span>(<span class="number">MAX</span>)      <span class="comment">-- Large text content</span>
+
+<span class="comment">-- VARCHAR without MAX (specifies max length)</span>
+phone_number    <span class="keyword">VARCHAR</span>(<span class="number">20</span>)        <span class="comment">-- Phone numbers</span>
+<span class="comment">-- VARCHAR with MAX (large text storage)</span>
+article_content <span class="keyword">VARCHAR</span>(<span class="number">MAX</span>)       <span class="comment">-- Blog posts, articles</span></pre>
+            </div>
+
+            <h2><i data-lucide="calendar"></i> Date & Time Data Types</h2>
+            <div class="type-grid">
+                <div class="type-card"><h4>DATE</h4><p>Date only (no time). Format: 'YYYY-MM-DD'. Range: 0001-01-01 to 9999-12-31.</p></div>
+                <div class="type-card"><h4>TIME</h4><p>Time only (no date). Format: 'HH:MM:SS.nnnnnnn'. Range: 00:00:00.0000000 to 23:59:59.9999999.</p></div>
+                <div class="type-card"><h4>DATETIME</h4><p>Date and time. 1753-01-01 to 9999-12-31. Precision: 3.33ms. Legacy type - use DATETIME2 instead.</p></div>
+                <div class="type-card"><h4>DATETIME2</h4><p>Enhanced datetime. 0001-01-01 to 9999-12-31. Precision: up to 100 nanoseconds. Recommended over DATETIME.</p></div>
+                <div class="type-card"><h4>DATETIMEOFFSET</h4><p>DateTime with timezone offset. Preserves timezone info. Best for distributed systems.</p></div>
+                <div class="type-card"><h4>SMALLDATETIME</h4><p>Date and time. 1900-01-01 to 2079-06-06. Precision: 1 minute. Legacy type.</p></div>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- Date/Time examples</span>
+date_of_birth   <span class="keyword">DATE</span>
+start_time      <span class="keyword">TIME</span>(<span class="number">0</span>)              <span class="comment">-- Time with 0 fractional seconds</span>
+created_at      <span class="keyword">DATETIME2</span>(<span class="number">3</span>)          <span class="comment">-- With 3 digits of milliseconds</span>
+updated_at      <span class="keyword">DATETIME2</span> <span class="keyword">DEFAULT</span> <span class="function">SYSUTCDATETIME</span>()
+<span class="comment">-- Default values</span>
+created_date    <span class="keyword">DATE</span> <span class="keyword">DEFAULT</span> <span class="function">CAST</span>(<span class="function">GETDATE</span>() <span class="keyword">AS</span> <span class="keyword">DATE</span>)
+modified_date   <span class="keyword">DATETIME2</span> <span class="keyword">DEFAULT</span> <span class="function">GETDATE</span>()
+
+<span class="comment">-- Date formatting and extraction</span>
+<span class="keyword">SELECT</span> <span class="function">YEAR</span>(order_date), <span class="function">MONTH</span>(order_date), <span class="function">DAY</span>(order_date)
+<span class="keyword">SELECT</span> <span class="function">DATEPART</span>(year, order_date), <span class="function">DATEPART</span>(quarter, order_date)
+<span class="keyword">SELECT</span> <span class="function">DATEADD</span>(day, <span class="number">30</span>, order_date) <span class="comment">-- Add 30 days</span>
+<span class="keyword">SELECT</span> <span class="function">DATEDIFF</span>(day, start_date, end_date) <span class="comment">-- Days between</span></pre>
+            </div>
+
+            <h2><i data-lucide="box"></i> Binary & Other Data Types</h2>
+            <div class="type-grid">
+                <div class="type-card"><h4>BINARY(n)</h4><p>Fixed-length binary data up to 8000 bytes. Good for hashes and fixed-length codes.</p></div>
+                <div class="type-card"><h4>VARBINARY(n)</h4><p>Variable-length binary up to n bytes. Use for images, files, encrypted data.</p></div>
+                <div class="type-card"><h4>VARBINARY(MAX)</h4><p>Large binary data up to 2GB. Use for storing documents, images, videos.</p></div>
+                <div class="type-card"><h4>UNIQUEIDENTIFIER</h4><p>GUID/UUID. 16-byte GUID. Use for distributed systems or replication keys.</p></div>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- Binary examples</span>
+icon_image      <span class="keyword">VARBINARY</span>(<span class="number">MAX</span>)           <span class="comment">-- Store images</span>
+document_file   <span class="keyword">VARBINARY</span>(<span class="number">MAX</span>)           <span class="comment">-- Store documents</span>
+password_hash   <span class="keyword">VARBINARY</span>(<span class="number">64</span>)            <span class="comment">-- SHA-256 hash</span>
+
+<span class="comment">-- GUID/UniqueIdentifier</span>
+row_guid        <span class="keyword">UNIQUEIDENTIFIER</span> <span class="keyword">DEFAULT</span> <span class="function">NEWID</span>()
+
+<span class="comment">-- JSON data (SQL Server 2016+)</span>
+metadata        <span class="keyword">NVARCHAR</span>(<span class="number">MAX</span>)           <span class="comment">-- Store JSON</span>
+<span class="comment">-- Or native JSON type (Azure SQL)</span>
+config_data     <span class="keyword">JSON</span>
+
+<span class="comment">-- XML data</span>
+xml_data        <span class="keyword">XML</span></pre>
+            </div>
+
+            <h2><i data-lucide="database"></i> Creating Tables with Data Types</h2>
+            <div class="code-block">
+<pre><span class="keyword">CREATE TABLE</span> customers (
+    customer_id       <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    first_name       <span class="keyword">NVARCHAR</span>(<span class="number">50</span>)  <span class="keyword">NOT NULL</span>,
+    last_name        <span class="keyword">NVARCHAR</span>(<span class="number">50</span>)  <span class="keyword">NOT NULL</span>,
+    email            <span class="keyword">NVARCHAR</span>(<span class="number">100</span>) <span class="keyword">UNIQUE</span>,
+    phone            <span class="keyword">VARCHAR</span>(<span class="number">20</span>),
+    date_of_birth    <span class="keyword">DATE</span>,
+    account_balance  <span class="keyword">DECIMAL</span>(<span class="number">18</span>,<span class="number">2</span>) <span class="keyword">DEFAULT</span> <span class="number">0</span>,
+    is_active        <span class="keyword">BIT</span> <span class="keyword">DEFAULT</span> <span class="number">1</span>,
+    created_at       <span class="keyword">DATETIME2</span> <span class="keyword">DEFAULT</span> <span class="function">GETDATE</span>(),
+    modified_at      <span class="keyword">DATETIME2</span> <span class="keyword">DEFAULT</span> <span class="function">GETDATE</span>()
+);
+
+<span class="keyword">CREATE TABLE</span> orders (
+    order_id         <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    customer_id      <span class="keyword">INT</span> <span class="keyword">NOT NULL</span> <span class="keyword">REFERENCES</span> customers(customer_id),
+    order_number     <span class="keyword">VARCHAR</span>(<span class="number">20</span>) <span class="keyword">UNIQUE</span>,
+    total_amount     <span class="keyword">DECIMAL</span>(<span class="number">18</span>,<span class="number">2</span>) <span class="keyword">NOT NULL</span>,
+    status           <span class="keyword">VARCHAR</span>(<span class="number">20</span>) <span class="keyword">DEFAULT</span> <span class="string">'Pending'</span>,
+    order_date       <span class="keyword">DATETIME2</span>(<span class="number">3</span>) <span class="keyword">DEFAULT</span> <span class="function">GETDATE</span>()
+);</pre>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Best Practices:</strong> Use NVARCHAR for user-facing text (handles international characters). Use appropriate lengths - too short limits data, too long wastes space. Always include DEFAULT values for audit columns.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="groupby-aggregates.html" class="nav-btn"><i data-lucide="arrow-left"></i> GROUP BY & Aggregates</a>
+                <a href="er-diagrams.html" class="nav-btn next">ER Diagrams <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

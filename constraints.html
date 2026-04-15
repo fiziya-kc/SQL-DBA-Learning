@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constraints - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+        .content h2:first-child { margin-top: 0; }
+        .content h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .string { color: #a5d6ff; } .code-block .number { color: #79c0ff; } .code-block .comment { color: #8b949e; font-style: italic; }
+        .tip-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .tip-box p { margin: 0; color: var(--text-primary); }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .constraint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+        .constraint-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+        .constraint-card h4 { color: var(--accent-purple); margin-bottom: 8px; }
+        .constraint-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>Database Constraints</span></h1>
+            <p>Learn how to enforce data integrity rules at the database level using constraints.</p>
+            <div class="breadcrumb">Home > Learning Path > Database Design > <span style="color: var(--text-primary);">Constraints</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="shield"></i> What are Constraints?</h2>
+            <p>Constraints are rules enforced on table data to maintain data integrity, accuracy, and reliability. They prevent invalid data from being entered into the database.</p>
+
+            <div class="constraint-grid">
+                <div class="constraint-card"><h4>NOT NULL</h4><p>Column cannot contain NULL values</p></div>
+                <div class="constraint-card"><h4>UNIQUE</h4><p>All values in column must be distinct</p></div>
+                <div class="constraint-card"><h4>PRIMARY KEY</h4><p>Unique identifier (NOT NULL + UNIQUE)</p></div>
+                <div class="constraint-card"><h4>FOREIGN KEY</h4><p>References another table</p></div>
+                <div class="constraint-card"><h4>CHECK</h4><p>Values must satisfy a condition</p></div>
+                <div class="constraint-card"><h4>DEFAULT</h4><p>Provides default value</p></div>
+            </div>
+
+            <h2><i data-lucide="code"></i> Creating Tables with Constraints</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Complete example with all constraints</span>
+<span class="keyword">CREATE TABLE</span> products (
+    product_id    <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    product_name  <span class="keyword">NVARCHAR</span>(<span class="number">100</span>) <span class="keyword">NOT NULL</span>,
+    sku           <span class="keyword">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">UNIQUE</span>,
+    price         <span class="keyword">DECIMAL</span>(<span class="number">10</span>,<span class="number">2</span>) <span class="keyword">NOT NULL</span> <span class="keyword">CHECK</span> (price > <span class="number">0</span>),
+    stock_level   <span class="keyword">INT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,
+    category_id   <span class="keyword">INT</span> <span class="keyword">REFERENCES</span> categories(category_id),
+    created_date  <span class="keyword">DATE</span> <span class="keyword">DEFAULT</span> <span class="function">CAST</span>(<span class="function">GETDATE</span>() <span class="keyword">AS</span> <span class="keyword">DATE</span>),
+    <span class="keyword">CHECK</span> (stock_level >= <span class="number">0</span>)
+);
+
+<span class="comment">-- Named constraints for better error messages</span>
+<span class="keyword">CREATE TABLE</span> employees (
+    emp_id    <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>),
+    first_name <span class="keyword">NVARCHAR</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>,
+    salary     <span class="keyword">DECIMAL</span>(<span class="number">10</span>,<span class="number">2</span>),
+    <span class="keyword">CONSTRAINT</span> PK_emp_id <span class="keyword">PRIMARY KEY</span> (emp_id),
+    <span class="keyword">CONSTRAINT</span> UQ_first_name <span class="keyword">UNIQUE</span> (first_name),
+    <span class="keyword">CONSTRAINT</span> CK_salary_positive <span class="keyword">CHECK</span> (salary > <span class="number">0</span>)
+);</pre>
+            </div>
+
+            <h2><i data-lucide="plus-circle"></i> Adding Constraints to Existing Tables</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Add NOT NULL to existing column</span>
+<span class="keyword">ALTER TABLE</span> employees
+<span class="keyword">ALTER COLUMN</span> last_name <span class="keyword">NVARCHAR</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>;
+
+<span class="comment">-- Add UNIQUE constraint</span>
+<span class="keyword">ALTER TABLE</span> employees
+<span class="keyword">ADD CONSTRAINT</span> UQ_email <span class="keyword">UNIQUE</span> (email);
+
+<span class="comment">-- Add CHECK constraint</span>
+<span class="keyword">ALTER TABLE</span> employees
+<span class="keyword">ADD CONSTRAINT</span> CK_hire_date <span class="keyword">CHECK</span> (hire_date <= <span class="function">GETDATE</span>());
+
+<span class="comment">-- Add DEFAULT constraint</span>
+<span class="keyword">ALTER TABLE</span> employees
+<span class="keyword">ADD CONSTRAINT</span> DF_is_active <span class="keyword">DEFAULT</span> <span class="number">1</span> <span class="keyword">FOR</span> is_active;
+
+<span class="comment">-- Add FOREIGN KEY constraint</span>
+<span class="keyword">ALTER TABLE</span> orders
+<span class="keyword">ADD CONSTRAINT</span> FK_customer
+    <span class="keyword">FOREIGN KEY</span> (customer_id) <span class="keyword">REFERENCES</span> customers(customer_id);</pre>
+            </div>
+
+            <h2><i data-lucide="trash-2"></i> Removing Constraints</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Drop a constraint</span>
+<span class="keyword">ALTER TABLE</span> employees
+<span class="keyword">DROP CONSTRAINT</span> CK_salary_positive;
+
+<span class="comment">-- Drop multiple constraints</span>
+<span class="keyword">ALTER TABLE</span> employees
+<span class="keyword">DROP CONSTRAINT</span> PK_emp_id, UQ_email;</pre>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Best Practice:</strong> Always define constraints at table creation time. Adding constraints later can fail if existing data violates them. Always test with existing data before adding constraints.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="primary-foreign-keys.html" class="nav-btn"><i data-lucide="arrow-left"></i> Primary/Foreign Keys</a>
+                <a href="stored-procedures.html" class="nav-btn next">Stored Procedures <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

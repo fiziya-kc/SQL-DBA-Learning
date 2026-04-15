@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SELECT Statement - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --accent-blue: #58a6ff;
+            --accent-green: #238636;
+            --accent-orange: #f78166;
+            --accent-purple: #a371f7;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --border: #30363d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        a:hover { color: #79c0ff; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0;
+        }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo {
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem;
+            color: var(--text-primary); display: flex; align-items: center; gap: 8px;
+        }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+
+        .hero {
+            padding: 120px 0 60px;
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05));
+            border-bottom: 1px solid var(--border);
+        }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; max-width: 700px; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .breadcrumb a { color: var(--accent-blue); }
+
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+        .content h2:first-child { margin-top: 0; }
+        .content h3 { font-size: 1.3rem; margin: 32px 0 16px; color: var(--text-primary); }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .content ul { margin: 16px 0 24px 24px; }
+        .content li { margin-bottom: 10px; color: var(--text-secondary); }
+
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+        .code-block .keyword { color: #ff7b72; }
+        .code-block .string { color: #a5d6ff; }
+        .code-block .number { color: #79c0ff; }
+        .code-block .comment { color: #8b949e; font-style: italic; }
+        .code-block .function { color: #d2a8ff; }
+        .code-block .operator { color: #ff7b72; }
+
+        .tip-box, .warning-box, .info-box {
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 24px 0;
+            display: flex;
+            gap: 16px;
+        }
+        .tip-box { background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .warning-box { background: rgba(247, 129, 102, 0.1); border: 1px solid var(--accent-orange); }
+        .warning-box i { color: var(--accent-orange); flex-shrink: 0; }
+        .info-box { background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent-blue); }
+        .info-box i { color: var(--accent-blue); flex-shrink: 0; }
+        .tip-box p, .warning-box p, .info-box p { margin: 0; color: var(--text-primary); }
+
+        .concept-visual {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .concept-visual svg { max-width: 100%; height: auto; }
+
+        .key-points {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin: 24px 0;
+        }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+        .nav-btn {
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 24px; background: var(--bg-secondary);
+            border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text-primary); font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo">
+                <i data-lucide="database"></i>
+                SQLDBA<span style="color: var(--accent-blue)">.learn</span>
+            </a>
+            <a href="../index.html#learning" class="back-link">
+                <i data-lucide="arrow-left"></i> Back to Learning
+            </a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>SELECT</span> Statement</h1>
+            <p>The foundation of all SQL queries. Learn how to retrieve, filter, and transform data from database tables.</p>
+            <div class="breadcrumb">
+                Home > Learning Path > SQL Fundamentals > <span style="color: var(--text-primary);">SELECT Statement</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="book-open"></i> What is SELECT?</h2>
+            <p>The SELECT statement is the most fundamental and frequently used SQL command. It allows you to query and retrieve data from one or more database tables. Every data analysis, report, and data-driven application starts with SELECT.</p>
+            
+            <div class="concept-visual">
+                <svg width="700" height="180" viewBox="0 0 700 180">
+                    <rect x="30" y="20" width="200" height="140" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+                    <text x="130" y="50" fill="#c9d1d9" font-size="14" text-anchor="middle" font-family="JetBrains Mono">employees</text>
+                    <line x1="50" y1="65" x2="210" y2="65" stroke="#30363d"/>
+                    <text x="60" y="85" fill="#8b949e" font-size="11">id | name | salary</text>
+                    <text x="60" y="105" fill="#c9d1d9" font-size="11">1 | John | 75000</text>
+                    <text x="60" y="125" fill="#c9d1d9" font-size="11">2 | Sarah | 82000</text>
+                    <text x="60" y="145" fill="#c9d1d9" font-size="11">3 | Mike | 65000</text>
+                    
+                    <path d="M260 90 L330 90" stroke="#238636" stroke-width="3" fill="none"/>
+                    <text x="295" y="70" fill="#238636" font-size="14" text-anchor="middle" font-weight="bold">SELECT</text>
+                    <polygon points="330,90 320,85 320,95" fill="#238636"/>
+                    
+                    <rect x="360" y="40" width="300" height="100" rx="8" fill="#161b22" stroke="#238636" stroke-width="2"/>
+                    <text x="510" y="65" fill="#238636" font-size="14" text-anchor="middle" font-family="JetBrains Mono">Result Set</text>
+                    <line x1="380" y1="80" x2="640" y2="80" stroke="#30363d"/>
+                    <text x="400" y="100" fill="#c9d1d9" font-size="11">1 | John | 75000</text>
+                    <text x="400" y="120" fill="#c9d1d9" font-size="11">2 | Sarah | 82000</text>
+                    <text x="400" y="140" fill="#c9d1d9" font-size="11">3 | Mike | 65000</text>
+                </svg>
+            </div>
+
+            <h2><i data-lucide="code"></i> Basic Syntax</h2>
+            <div class="code-block">
+<pre><span class="keyword">SELECT</span> column1, column2, column3
+<span class="keyword">FROM</span> table_name;
+
+<span class="comment">-- Select ALL columns</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> table_name;</pre>
+            </div>
+
+            <h2><i data-lucide="play"></i> Practical Examples</h2>
+            
+            <div class="code-block">
+<pre><span class="comment">-- Example 1: Select all columns from employees table</span>
+<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> employees;
+
+<span class="comment">-- Example 2: Select specific columns</span>
+<span class="keyword">SELECT</span> first_name, last_name, email, hire_date
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- Example 3: Use column aliases with AS</span>
+<span class="keyword">SELECT</span> 
+    first_name <span class="keyword">AS</span> <span class="string">'First Name'</span>,
+    last_name <span class="keyword">AS</span> <span class="string">'Last Name'</span>,
+    salary * <span class="number">12</span> <span class="keyword">AS</span> annual_salary,
+    department_id <span class="keyword">AS</span> dept_no
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- Example 4: Concatenate columns</span>
+<span class="keyword">SELECT</span> 
+    first_name + <span class="string">' '</span> + last_name <span class="keyword">AS</span> full_name
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- Example 5: Use expressions in SELECT</span>
+<span class="keyword">SELECT</span> 
+    product_name,
+    unit_price,
+    quantity,
+    unit_price * quantity <span class="keyword">AS</span> total_value
+<span class="keyword">FROM</span> order_items;</pre>
+            </div>
+
+            <h2><i data-lucide="filter"></i> Filtering with WHERE</h2>
+            <p>The WHERE clause filters rows based on specified conditions. Only rows that meet the criteria are included in the result set.</p>
+
+            <div class="code-block">
+<pre><span class="comment">-- Filter with single condition</span>
+<span class="keyword">SELECT</span> first_name, last_name, salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> salary > <span class="number">50000</span>;
+
+<span class="comment">-- Filter with text value (use single quotes)</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> department = <span class="string">'Sales'</span>;
+
+<span class="comment">-- Multiple conditions with AND</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> department = <span class="string">'Sales'</span>
+   <span class="keyword">AND</span> salary > <span class="number">60000</span>
+   <span class="keyword">AND</span> hire_date > <span class="string">'2020-01-01'</span>;
+
+<span class="comment">-- Multiple conditions with OR</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> department = <span class="string">'Sales'</span>
+   <span class="keyword">OR</span> department = <span class="string">'Marketing'</span>;
+
+<span class="comment">-- Combine AND and OR (use parentheses!)</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> (salary > <span class="number">80000</span> <span class="keyword">OR</span> department = <span class="string">'HR'</span>)
+   <span class="keyword">AND</span> is_active = <span class="number">1</span>;
+
+<span class="comment">-- NOT operator</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> <span class="keyword">NOT</span> department = <span class="string">'IT'</span>;</pre>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Pro Tip:</strong> Always use parentheses when combining AND and OR to ensure correct evaluation order. AND has higher precedence than OR.</p>
+                </div>
+            </div>
+
+            <h2><i data-lucide="equal"></i> Comparison Operators</h2>
+            <div class="key-points">
+                <h4>Available Operators</h4>
+                <ul>
+                    <li><strong>=</strong> (Equal) - salary = 50000</li>
+                    <li><strong><></strong> or <strong>!=</strong> (Not equal) - department <> 'Sales'</li>
+                    <li><strong>></strong> (Greater than) - salary > 50000</li>
+                    <li><strong><</strong> (Less than) - salary < 80000</li>
+                    <li><strong>>=</strong> (Greater than or equal) - salary >= 50000</li>
+                    <li><strong><=</strong> (Less than or equal) - salary <= 80000</li>
+                    <li><strong>BETWEEN</strong> (Range) - salary BETWEEN 50000 AND 80000</li>
+                    <li><strong>IN</strong> (Multiple values) - department IN ('Sales', 'Marketing')</li>
+                    <li><strong>LIKE</strong> (Pattern match) - name LIKE 'J%'</li>
+                    <li><strong>IS NULL / IS NOT NULL</strong> (Null check) - email IS NOT NULL</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- BETWEEN operator (inclusive)</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> salary <span class="keyword">BETWEEN</span> <span class="number">50000</span> <span class="keyword">AND</span> <span class="number">80000</span>;
+
+<span class="comment">-- IN operator (matches any in list)</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> department <span class="keyword">IN</span> (<span class="string">'Sales'</span>, <span class="string">'Marketing'</span>, <span class="string">'HR'</span>);
+
+<span class="comment">-- LIKE operator for pattern matching</span>
+<span class="comment">-- % matches any sequence of characters</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> last_name <span class="keyword">LIKE</span> <span class="string">'Sm%'</span>;      <span class="comment">-- Starts with Sm</span>
+
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> email <span class="keyword">LIKE</span> <span class="string">'%@gmail.com'</span>; <span class="comment">-- Ends with @gmail.com</span>
+
+<span class="comment">-- _ matches exactly one character</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> first_name <span class="keyword">LIKE</span> <span class="string">'J_hn'</span>;    <span class="comment">-- Matches "John"</span>
+
+<span class="comment">-- NULL handling</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> manager_id <span class="keyword">IS NULL</span>;    <span class="comment">-- No manager (top level)</span>
+
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> phone <span class="keyword">IS NOT NULL</span>;    <span class="comment">-- Has a phone number</span></pre>
+            </div>
+
+            <h2><i data-lucide="arrow-up-down"></i> Sorting with ORDER BY</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Sort ascending (default)</span>
+<span class="keyword">SELECT</span> first_name, last_name, salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> salary;
+
+<span class="comment">-- Sort descending</span>
+<span class="keyword">SELECT</span> first_name, last_name, hire_date
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> hire_date <span class="keyword">DESC</span>;
+
+<span class="comment">-- Sort by multiple columns</span>
+<span class="keyword">SELECT</span> department, first_name, last_name, salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> department <span class="keyword">ASC</span>, salary <span class="keyword">DESC</span>;
+
+<span class="comment">-- Sort by column position (not recommended for clarity)</span>
+<span class="keyword">SELECT</span> first_name, last_name, salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> <span class="number">3</span> <span class="keyword">DESC</span>;  <span class="comment">-- Sorts by 3rd column (salary)</span></pre>
+            </div>
+
+            <h2><i data-lucide="list"></i> Limiting Results</h2>
+            <div class="code-block">
+<pre><span class="comment">-- SQL Server: TOP keyword</span>
+<span class="keyword">SELECT TOP</span> <span class="number">10</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> salary <span class="keyword">DESC</span>;
+
+<span class="comment">-- SQL Server: TOP with percent</span>
+<span class="keyword">SELECT TOP</span> <span class="number">10</span> <span class="keyword">PERCENT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> salary <span class="keyword">DESC</span>;
+
+<span class="comment">-- SQL Server: WITH TIES (includes ties)</span>
+<span class="keyword">SELECT TOP</span> <span class="number">10</span> <span class="keyword">WITH TIES</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> salary <span class="keyword">DESC</span>;
+
+<span class="comment">-- MySQL/PostgreSQL: LIMIT</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> salary <span class="keyword">DESC</span>
+<span class="keyword">LIMIT</span> <span class="number">10</span> <span class="keyword">OFFSET</span> <span class="number">0</span>;
+
+<span class="comment">-- Pagination example</span>
+<span class="keyword">SELECT</span> *
+<span class="keyword">FROM</span> employees
+<span class="keyword">ORDER BY</span> employee_id
+<span class="keyword">LIMIT</span> <span class="number">10</span> <span class="keyword">OFFSET</span> <span class="number">20</span>;  <span class="comment">-- Page 3 (skip first 20, get next 10)</span></pre>
+            </div>
+
+            <h2><i data-lucide="check-circle"></i> DISTINCT - Removing Duplicates</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Get unique department values</span>
+<span class="keyword">SELECT DISTINCT</span> department
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- Get unique combinations</span>
+<span class="keyword">SELECT DISTINCT</span> department, job_title
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- Count unique values</span>
+<span class="keyword">SELECT</span> <span class="function">COUNT</span>(<span class="keyword">DISTINCT</span> department) <span class="keyword">AS</span> num_departments
+<span class="keyword">FROM</span> employees;</pre>
+            </div>
+
+            <div class="warning-box">
+                <i data-lucide="alert-triangle"></i>
+                <div>
+                    <p><strong>Performance Warning:</strong> SELECT * retrieves all columns and should be avoided in production code. It increases network traffic, memory usage, and makes your code less maintainable. Always explicitly list the columns you need.</p>
+                </div>
+            </div>
+
+            <div class="key-points">
+                <h4>Key Points to Remember</h4>
+                <ul>
+                    <li><strong>SELECT</strong> retrieves data, it never modifies data</li>
+                    <li><strong>WHERE</strong> filters rows before they're returned (reduces data early)</li>
+                    <li><strong>ORDER BY</strong> sorts results (happens after filtering)</li>
+                    <li><strong>String values</strong> must be enclosed in single quotes</li>
+                    <li><strong>SQL is case-insensitive</strong> for keywords, but case-sensitive for data values</li>
+                    <li><strong>DISTINCT</strong> removes duplicate rows from results</li>
+                    <li><strong>LIMIT/TOP</strong> restricts the number of rows returned</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <i data-lucide="info"></i>
+                <div>
+                    <p><strong>Execution Order:</strong> SQL executes in this order: FROM → WHERE → SELECT → ORDER BY. Understanding this helps you write efficient queries and debug issues.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="../index.html#learning" class="nav-btn">
+                    <i data-lucide="arrow-left"></i> Back to Learning Path
+                </a>
+                <a href="joins-subqueries.html" class="nav-btn next">
+                    Next: JOINs & Subqueries <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

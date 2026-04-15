@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROUP BY & Aggregates - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d;
+            --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166;
+            --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        a:hover { color: #79c0ff; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+        .content h2:first-child { margin-top: 0; }
+        .content h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .string { color: #a5d6ff; } .code-block .number { color: #79c0ff; } .code-block .comment { color: #8b949e; font-style: italic; } .code-block .function { color: #d2a8ff; }
+        .tip-box, .warning-box, .info-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; }
+        .tip-box { background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .warning-box { background: rgba(247, 129, 102, 0.1); border: 1px solid var(--accent-orange); }
+        .warning-box i { color: var(--accent-orange); flex-shrink: 0; }
+        .info-box { background: rgba(88, 166, 255, 0.1); border: 1px solid var(--accent-blue); }
+        .info-box i { color: var(--accent-blue); flex-shrink: 0; }
+        .tip-box p, .warning-box p, .info-box p { margin: 0; color: var(--text-primary); }
+        .concept-visual { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin: 24px 0; text-align: center; }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+        .function-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+        .function-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+        .function-card h4 { color: var(--accent-purple); margin-bottom: 8px; font-size: 1rem; }
+        .function-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>GROUP BY</span> & Aggregates</h1>
+            <p>Master aggregate functions and grouping to summarize, analyze, and derive insights from large datasets.</p>
+            <div class="breadcrumb">Home > Learning Path > SQL Fundamentals > <span style="color: var(--text-primary);">GROUP BY & Aggregates</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="sigma"></i> Aggregate Functions</h2>
+            <p>Aggregate functions perform calculations on sets of rows and return a single result. They're essential for reporting, analytics, and data analysis.</p>
+
+            <div class="function-grid">
+                <div class="function-card"><h4>COUNT()</h4><p>Counts rows or non-null values</p></div>
+                <div class="function-card"><h4>SUM()</h4><p>Adds all numeric values</p></div>
+                <div class="function-card"><h4>AVG()</h4><p>Calculates the average</p></div>
+                <div class="function-card"><h4>MIN()</h4><p>Finds the minimum value</p></div>
+                <div class="function-card"><h4>MAX()</h4><p>Finds the maximum value</p></div>
+                <div class="function-card"><h4>COUNT_BIG()</h4><p>For large result sets</p></div>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- Basic aggregate functions</span>
+<span class="keyword">SELECT</span>
+    <span class="function">COUNT</span>(*) <span class="keyword">AS</span> total_rows,
+    <span class="function">COUNT</span>(DISTINCT department) <span class="keyword">AS</span> num_departments,
+    <span class="function">SUM</span>(salary) <span class="keyword">AS</span> total_payroll,
+    <span class="function">AVG</span>(salary) <span class="keyword">AS</span> average_salary,
+    <span class="function">MIN</span>(salary) <span class="keyword">AS</span> lowest_salary,
+    <span class="function">MAX</span>(salary) <span class="keyword">AS</span> highest_salary
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- COUNT variations</span>
+<span class="keyword">SELECT</span>
+    <span class="function">COUNT</span>(*) <span class="keyword">AS</span> all_rows,              <span class="comment">-- Includes NULLs</span>
+    <span class="function">COUNT</span>(manager_id) <span class="keyword">AS</span> with_manager,     <span class="comment">-- Excludes NULLs</span>
+    <span class="function">COUNT</span>(DISTINCT department) <span class="keyword">AS</span> unique_depts
+<span class="keyword">FROM</span> employees;</pre>
+            </div>
+
+            <h2><i data-lucide="git-branch"></i> GROUP BY Clause</h2>
+            <p>GROUP BY groups rows with the same values into summary rows. It's used with aggregate functions to perform calculations per group.</p>
+
+            <div class="concept-visual">
+                <svg width="700" height="180" viewBox="0 0 700 180">
+                    <rect x="30" y="20" width="200" height="150" rx="8" fill="#161b22" stroke="#30363d"/>
+                    <text x="130" y="45" fill="#8b949e" font-size="12" text-anchor="middle">employees table</text>
+                    <line x1="40" y1="55" x2="220" y2="55" stroke="#30363d"/>
+                    <text x="50" y="75" fill="#c9d1d9" font-size="10">dept | name | salary</text>
+                    <text x="50" y="95" fill="#8b949e" font-size="10">Sales | John | 60K</text>
+                    <text x="50" y="115" fill="#8b949e" font-size="10">Sales | Sarah | 70K</text>
+                    <text x="50" y="135" fill="#8b949e" font-size="10">IT | Mike | 80K</text>
+                    <text x="50" y="155" fill="#8b949e" font-size="10">IT | Lisa | 90K</text>
+                    
+                    <path d="M260 90 L330 90" stroke="#58a6ff" stroke-width="3" fill="none"/>
+                    <text x="295" y="70" fill="#58a6ff" font-size="14" text-anchor="middle">GROUP BY</text>
+                    <polygon points="330,90 320,85 320,95" fill="#58a6ff"/>
+                    
+                    <rect x="360" y="30" width="300" height="120" rx="8" fill="#161b22" stroke="#238636"/>
+                    <text x="510" y="55" fill="#238636" font-size="12" text-anchor="middle">Result</text>
+                    <line x1="380" y1="70" x2="640" y2="70" stroke="#30363d"/>
+                    <text x="400" y="90" fill="#c9d1d9" font-size="10">Sales | 2 | 65K avg</text>
+                    <text x="400" y="115" fill="#c9d1d9" font-size="10">IT | 2 | 85K avg</text>
+                </svg>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- Group by single column</span>
+<span class="keyword">SELECT</span>
+    department,
+    <span class="function">COUNT</span>(*) <span class="keyword">AS</span> employee_count,
+    <span class="function">AVG</span>(salary) <span class="keyword">AS</span> avg_salary,
+    <span class="function">SUM</span>(salary) <span class="keyword">AS</span> total_salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">GROUP BY</span> department
+<span class="keyword">ORDER BY</span> avg_salary <span class="keyword">DESC</span>;
+
+<span class="comment">-- Group by multiple columns</span>
+<span class="keyword">SELECT</span>
+    department,
+    job_title,
+    <span class="function">COUNT</span>(*) <span class="keyword">AS</span> headcount,
+    <span class="function">AVG</span>(salary) <span class="keyword">AS</span> avg_salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">GROUP BY</span> department, job_title
+<span class="keyword">ORDER BY</span> department, headcount <span class="keyword">DESC</span>;
+
+<span class="comment">-- GROUP BY with WHERE (filter before grouping)</span>
+<span class="keyword">SELECT</span>
+    department,
+    <span class="function">COUNT</span>(*) <span class="keyword">AS</span> emp_count
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> hire_date >= <span class="string">'2022-01-01'</span>
+<span class="keyword">GROUP BY</span> department;</pre>
+            </div>
+
+            <h2><i data-lucide="filter"></i> HAVING vs WHERE</h2>
+            <div class="key-points">
+                <h4>Understanding the Difference</h4>
+                <ul>
+                    <li><strong>WHERE</strong> - Filters individual rows <em>before</em> grouping</li>
+                    <li><strong>HAVING</strong> - Filters grouped results <em>after</em> aggregation</li>
+                    <li>You can use <strong>both</strong> together: WHERE first (rows), then HAVING (groups)</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- WHERE filters rows BEFORE grouping</span>
+<span class="keyword">SELECT</span>
+    department,
+    <span class="function">AVG</span>(salary) <span class="keyword">AS</span> avg_salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> hire_date > <span class="string">'2020-01-01'</span>   <span class="comment">-- Filter rows first</span>
+<span class="keyword">GROUP BY</span> department;
+
+<span class="comment">-- HAVING filters groups AFTER aggregation</span>
+<span class="keyword">SELECT</span>
+    department,
+    <span class="function">AVG</span>(salary) <span class="keyword">AS</span> avg_salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">GROUP BY</span> department
+<span class="keyword">HAVING</span> <span class="function">AVG</span>(salary) > <span class="number">70000</span>;    <span class="comment">-- Filter groups second</span>
+
+<span class="comment">-- Using both WHERE and HAVING together</span>
+<span class="keyword">SELECT</span>
+    department,
+    <span class="function">COUNT</span>(*) <span class="keyword">AS</span> emp_count,
+    <span class="function">AVG</span>(salary) <span class="keyword">AS</span> avg_salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">WHERE</span> is_active = <span class="number">1</span>                    <span class="comment">-- 1. Filter rows</span>
+<span class="keyword">GROUP BY</span> department                      <span class="comment">-- 2. Group them</span>
+<span class="keyword">HAVING</span> <span class="function">COUNT</span>(*) >= <span class="number">3</span>                  <span class="comment">-- 3. Filter groups</span>
+<span class="keyword">ORDER BY</span> avg_salary <span class="keyword">DESC</span>;             <span class="comment">-- 4. Sort results</span></pre>
+            </div>
+
+            <h2><i data-lucide="calculator"></i> Advanced Aggregate Functions</h2>
+            <div class="code-block">
+<pre><span class="comment">-- STRING_AGG - Concatenate values within group</span>
+<span class="keyword">SELECT</span>
+    department,
+    <span class="function">STRING_AGG</span>(first_name, <span class="string">', '</span>) <span class="keyword">WITHIN GROUP</span> (<span class="keyword">ORDER BY</span> first_name) <span class="keyword">AS</span> employees
+<span class="keyword">FROM</span> employees
+<span class="keyword">GROUP BY</span> department;
+
+<span class="comment">-- GROUPING SETS - Multiple grouping levels</span>
+<span class="keyword">SELECT</span>
+    department,
+    job_title,
+    <span class="function">SUM</span>(salary) <span class="keyword">AS</span> total_salary
+<span class="keyword">FROM</span> employees
+<span class="keyword">GROUP BY</span> <span class="function">GROUPING SETS</span> (
+    (department),              <span class="comment">-- By department</span>
+    (job_title),              <span class="comment">-- By job title</span>
+    (department, job_title),   <span class="comment">-- Both</span>
+    ()                         <span class="comment">-- Grand total</span>
+);
+
+<span class="comment">-- ROLLUP - Hierarchical aggregation</span>
+<span class="keyword">SELECT</span>
+    region,
+    department,
+    <span class="function">SUM</span>(sales) <span class="keyword">AS</span> total_sales
+<span class="keyword">FROM</span> sales_data
+<span class="keyword">GROUP BY</span> <span class="function">ROLLUP</span> (region, department);
+
+<span class="comment">-- CUBE - All combinations</span>
+<span class="keyword">SELECT</span>
+    year,
+    quarter,
+    <span class="function">SUM</span>(revenue) <span class="keyword">AS</span> total_revenue
+<span class="keyword">FROM</span> quarterly_sales
+<span class="keyword">GROUP BY</span> <span class="function">CUBE</span> (year, quarter);</pre>
+            </div>
+
+            <h2><i data-lucide="percent"></i> Window Functions (OVER)</h2>
+            <p>Window functions perform calculations across a set of rows related to the current row, without reducing the number of rows returned.</p>
+
+            <div class="code-block">
+<pre><span class="comment">-- Calculate running total</span>
+<span class="keyword">SELECT</span>
+    order_date,
+    amount,
+    <span class="function">SUM</span>(amount) <span class="keyword">OVER</span> (<span class="keyword">ORDER BY</span> order_date) <span class="keyword">AS</span> running_total
+<span class="keyword">FROM</span> orders;
+
+<span class="comment">-- Calculate rank within group</span>
+<span class="keyword">SELECT</span>
+    first_name,
+    department,
+    salary,
+    <span class="function">RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION BY</span> department <span class="keyword">ORDER BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> salary_rank,
+    <span class="function">DENSE_RANK</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION BY</span> department <span class="keyword">ORDER BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> dense_rank
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- Compare to average</span>
+<span class="keyword">SELECT</span>
+    first_name,
+    salary,
+    department,
+    <span class="function">AVG</span>(salary) <span class="keyword">OVER</span> (<span class="keyword">PARTITION BY</span> department) <span class="keyword">AS</span> dept_avg,
+    salary - <span class="function">AVG</span>(salary) <span class="keyword">OVER</span> (<span class="keyword">PARTITION BY</span> department) <span class="keyword">AS</span> diff_from_avg
+<span class="keyword">FROM</span> employees;
+
+<span class="comment">-- ROW_NUMBER with different orderings</span>
+<span class="keyword">SELECT</span>
+    first_name,
+    hire_date,
+    <span class="function">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">ORDER BY</span> hire_date) <span class="keyword">AS</span> seniority,
+    <span class="function">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION BY</span> department <span class="keyword">ORDER BY</span> salary <span class="keyword">DESC</span>) <span class="keyword">AS</span> top_paid_in_dept
+<span class="keyword">FROM</span> employees;</pre>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Pro Tip:</strong> Always include all non-aggregated columns in your GROUP BY clause. In SQL Server, this is strictly enforced. Other databases may return unpredictable values for columns not in GROUP BY.</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <i data-lucide="info"></i>
+                <div>
+                    <p><strong>Execution Order:</strong> FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. Understanding this order helps you debug queries and write efficient aggregation.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="joins-subqueries.html" class="nav-btn"><i data-lucide="arrow-left"></i> JOINs & Subqueries</a>
+                <a href="data-types.html" class="nav-btn next">Data Types & Schemas <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triggers - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .comment { color: #8b949e; font-style: italic; } .code-block .function { color: #d2a8ff; }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .warning-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; background: rgba(247, 129, 102, 0.1); border: 1px solid var(--accent-orange); }
+        .warning-box i { color: var(--accent-orange); flex-shrink: 0; }
+        .warning-box p { margin: 0; color: var(--text-primary); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>Triggers</span></h1>
+            <p>Automated code that executes in response to database events.</p>
+            <div class="breadcrumb">Home > Learning Path > T-SQL Programming > <span style="color: var(--text-primary);">Triggers</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="zap"></i> What is a Trigger?</h2>
+            <p>A trigger is a special stored procedure that automatically executes when a specific event occurs in the database, such as INSERT, UPDATE, or DELETE operations.</p>
+
+            <div class="key-points">
+                <h4>Types of Triggers</h4>
+                <ul>
+                    <li><strong>DML Triggers</strong> - Fire on INSERT, UPDATE, DELETE</li>
+                    <li><strong>DDL Triggers</strong> - Fire on CREATE, ALTER, DROP</li>
+                    <li><strong>AFTER</strong> - Fires after the action completes</li>
+                    <li><strong>INSTEAD OF</strong> - Fires instead of the action</li>
+                </ul>
+            </div>
+
+            <h2><i data-lucide="code"></i> DML Triggers</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Audit trigger for tracking changes</span>
+<span class="keyword">CREATE TRIGGER</span> trg_EmployeeAudit
+<span class="keyword">ON</span> employees
+<span class="keyword">AFTER INSERT, UPDATE</span>
+<span class="keyword">AS</span>
+<span class="keyword">BEGIN</span>
+    <span class="keyword">INSERT INTO</span> employee_audit (
+        employee_id, action, old_salary, new_salary, 
+        changed_by, changed_date
+    )
+    <span class="keyword">SELECT</span> 
+        i.employee_id,
+        <span class="keyword">CASE</span> <span class="keyword">WHEN</span> <span class="function">EXISTS</span>(<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> deleted) 
+            <span class="keyword">THEN</span> <span class="string">'UPDATE'</span> <span class="keyword">ELSE</span> <span class="string">'INSERT'</span> <span class="keyword">END</span>,
+        d.salary,
+        i.salary,
+        <span class="function">SYSTEM_USER</span>,
+        <span class="function">GETDATE</span>()
+    <span class="keyword">FROM</span> inserted i
+    <span class="keyword">LEFT JOIN</span> deleted d <span class="keyword">ON</span> i.employee_id = d.employee_id;
+<span class="keyword">END</span>
+
+<span class="comment">-- INSTEAD OF trigger (for views or constrained inserts)</span>
+<span class="keyword">CREATE TRIGGER</span> trg_PreventDelete
+<span class="keyword">ON</span> employees
+<span class="keyword">INSTEAD OF DELETE</span>
+<span class="keyword">AS</span>
+<span class="keyword">BEGIN</span>
+    <span class="keyword">RAISERROR</span>(<span class="string">'Direct deletes are not allowed. Use soft delete.'</span>, <span class="number">16</span>, <span class="number">1</span>);
+<span class="keyword">END</span></pre>
+            </div>
+
+            <div class="warning-box">
+                <i data-lucide="alert-triangle"></i>
+                <div>
+                    <p><strong>Caution:</strong> Use triggers sparingly. They can cause performance issues and make debugging difficult. Business logic in application code is usually easier to maintain.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="functions.html" class="nav-btn"><i data-lucide="arrow-left"></i> Functions</a>
+                <a href="transactions.html" class="nav-btn next">Transactions <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

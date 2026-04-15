@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-SQL Functions - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); }
+        .content h2:first-child { margin-top: 0; }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .string { color: #a5d6ff; } .code-block .number { color: #79c0ff; } .code-block .comment { color: #8b949e; font-style: italic; } .code-block .function { color: #d2a8ff; }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .tip-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .tip-box p { margin: 0; color: var(--text-primary); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>T-SQL Functions</span></h1>
+            <p>Reusable code that returns values for use in SQL statements.</p>
+            <div class="breadcrumb">Home > Learning Path > T-SQL Programming > <span style="color: var(--text-primary);">Functions</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="function-square"></i> Types of Functions</h2>
+            <div class="key-points">
+                <h4>Function Types</h4>
+                <ul>
+                    <li><strong>Scalar Functions</strong> - Returns a single value. Used in SELECT, WHERE, etc.</li>
+                    <li><strong>Table-Valued Functions (TVF)</strong> - Returns a table. Can JOIN with other tables.</li>
+                    <li><strong>Inline TVF</strong> - Single SELECT statement returning table</li>
+                    <li><strong>Multi-statement TVF</strong> - BEGIN/END block returning table variable</li>
+                </ul>
+            </div>
+
+            <h2><i data-lucide="code"></i> Creating Scalar Functions</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Scalar function to calculate bonus</span>
+<span class="keyword">CREATE FUNCTION</span> dbo.<span class="function">CalculateBonus</span>
+    (@Salary <span class="keyword">DECIMAL</span>(<span class="number">10</span>,<span class="number">2</span>), @Rating <span class="keyword">INT</span>)
+<span class="keyword">RETURNS</span> <span class="keyword">DECIMAL</span>(<span class="number">10</span>,<span class="number">2</span>)
+<span class="keyword">AS</span>
+<span class="keyword">BEGIN</span>
+    <span class="keyword">DECLARE</span> @BonusRate <span class="keyword">DECIMAL</span>(<span class="number">3</span>,<span class="number">2</span>);
+    
+    <span class="keyword">SET</span> @BonusRate = <span class="keyword">CASE</span>
+        <span class="keyword">WHEN</span> @Rating >= <span class="number">5</span> <span class="keyword">THEN</span> <span class="number">0.20</span>
+        <span class="keyword">WHEN</span> @Rating >= <span class="number">3</span> <span class="keyword">THEN</span> <span class="number">0.10</span>
+        <span class="keyword">ELSE</span> <span class="number">0.00</span>
+    <span class="keyword">END</span>;
+    
+    <span class="keyword">RETURN</span> @Salary * @BonusRate;
+<span class="keyword">END</span>
+
+<span class="comment">-- Use the function</span>
+<span class="keyword">SELECT</span> first_name, salary, rating,
+       dbo.<span class="function">CalculateBonus</span>(salary, rating) <span class="keyword">AS</span> bonus
+<span class="keyword">FROM</span> employees;</pre>
+            </div>
+
+            <h2><i data-lucide="table"></i> Table-Valued Functions</h2>
+            <div class="code-block">
+<pre><span class="comment">-- Inline table-valued function</span>
+<span class="keyword">CREATE FUNCTION</span> dbo.<span class="function">GetEmployeesByDept</span>
+    (@DepartmentID <span class="keyword">INT</span>)
+<span class="keyword">RETURNS TABLE</span>
+<span class="keyword">AS</span>
+<span class="keyword">RETURN</span>
+(
+    <span class="keyword">SELECT</span> employee_id, first_name, last_name, salary
+    <span class="keyword">FROM</span> employees
+    <span class="keyword">WHERE</span> department_id = @DepartmentID
+)
+
+<span class="comment">-- Use in JOIN</span>
+<span class="keyword">SELECT</span> d.department_name, e.first_name, e.salary
+<span class="keyword">FROM</span> departments d
+<span class="keyword">CROSS APPLY</span> dbo.<span class="function">GetEmployeesByDept</span>(d.department_id) e;</pre>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Performance Tip:</strong> Scalar functions can be slow on large datasets because they're called for each row. Consider using CROSS APPLY or rewriting with set-based operations.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="stored-procedures.html" class="nav-btn"><i data-lucide="arrow-left"></i> Stored Procedures</a>
+                <a href="triggers.html" class="nav-btn next">Triggers <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

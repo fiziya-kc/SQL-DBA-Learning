@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primary & Foreign Keys - SQL DBA Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        :root { --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d; --accent-blue: #58a6ff; --accent-green: #238636; --accent-orange: #f78166; --accent-purple: #a371f7; --text-primary: #c9d1d9; --text-secondary: #8b949e; --border: #30363d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.7; }
+        h1, h2, h3, h4 { font-family: 'JetBrains Mono', monospace; }
+        a { color: var(--accent-blue); text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 16px 0; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent-blue); }
+        .back-link { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .hero { padding: 120px 0 60px; background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05)); border-bottom: 1px solid var(--border); }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 16px; }
+        .hero h1 span { color: var(--accent-blue); }
+        .hero p { color: var(--text-secondary); font-size: 1.1rem; }
+        .breadcrumb { margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary); }
+        .content { padding: 60px 0 100px; }
+        .content h2 { font-size: 1.8rem; margin: 48px 0 20px; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+        .content h2:first-child { margin-top: 0; }
+        .content h3 { font-size: 1.3rem; margin: 32px 0 16px; }
+        .content p { margin-bottom: 16px; color: var(--text-secondary); }
+        .code-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 20px 0; overflow-x: auto; }
+        .code-block pre { font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; }
+        .code-block .keyword { color: #ff7b72; } .code-block .string { color: #a5d6ff; } .code-block .number { color: #79c0ff; } .code-block .comment { color: #8b949e; font-style: italic; }
+        .tip-box, .warning-box { border-radius: 8px; padding: 20px 24px; margin: 24px 0; display: flex; gap: 16px; }
+        .tip-box { background: rgba(35, 134, 54, 0.1); border: 1px solid var(--accent-green); }
+        .tip-box i { color: var(--accent-green); flex-shrink: 0; }
+        .warning-box { background: rgba(247, 129, 102, 0.1); border: 1px solid var(--accent-orange); }
+        .warning-box i { color: var(--accent-orange); flex-shrink: 0; }
+        .tip-box p, .warning-box p { margin: 0; color: var(--text-primary); }
+        .key-points { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; margin: 24px 0; }
+        .key-points h4 { margin-bottom: 16px; color: var(--accent-blue); }
+        .key-points ul { margin: 0; padding-left: 20px; }
+        .key-points li { margin-bottom: 10px; color: var(--text-secondary); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); font-weight: 500; transition: all 0.2s; }
+        .nav-btn:hover { background: var(--accent-blue); color: var(--bg-primary); border-color: var(--accent-blue); }
+        .nav-btn.next { margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><i data-lucide="database"></i> SQLDBA<span style="color: var(--accent-blue)">.learn</span></a>
+            <a href="../index.html#learning" class="back-link"><i data-lucide="arrow-left"></i> Back to Learning</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1><span>Primary & Foreign Keys</span></h1>
+            <p>Understanding the fundamental concepts for establishing relationships and maintaining data integrity.</p>
+            <div class="breadcrumb">Home > Learning Path > Database Design > <span style="color: var(--text-primary);">Primary/Foreign Keys</span></div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container">
+            <h2><i data-lucide="key"></i> Primary Key</h2>
+            <p>A Primary Key is a column (or set of columns) that uniquely identifies each row in a table. Every table should have a primary key.</p>
+
+            <div class="key-points">
+                <h4>Primary Key Rules</h4>
+                <ul>
+                    <li><strong>UNIQUE</strong> - Must have different values for every row</li>
+                    <li><strong>NOT NULL</strong> - Cannot contain NULL values</li>
+                    <li><strong>Immutable</strong> - Should rarely or never change</li>
+                    <li><strong>Simple</strong> - Integer values are best (faster comparisons)</li>
+                    <li><strong>Single per table</strong> - Only one primary key per table</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- Primary Key with IDENTITY (auto-increment)</span>
+<span class="keyword">CREATE TABLE</span> employees (
+    employee_id <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    first_name  <span class="keyword">NVARCHAR</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>,
+    last_name   <span class="keyword">NVARCHAR</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>
+);
+
+<span class="comment">-- Composite Primary Key (multiple columns)</span>
+<span class="keyword">CREATE TABLE</span> order_items (
+    order_id   <span class="keyword">INT</span> <span class="keyword">NOT NULL</span>,
+    product_id <span class="keyword">INT</span> <span class="keyword">NOT NULL</span>,
+    quantity   <span class="keyword">INT</span> <span class="keyword">NOT NULL</span>,
+    <span class="keyword">PRIMARY KEY</span> (order_id, product_id)
+);
+
+<span class="comment">-- Add Primary Key to existing table</span>
+<span class="keyword">ALTER TABLE</span> products
+<span class="keyword">ADD</span> <span class="keyword">PRIMARY KEY</span> (product_id);
+
+<span class="comment">-- Uniqueidentifier as Primary Key</span>
+<span class="keyword">CREATE TABLE</span> sync_table (
+    row_id <span class="keyword">UNIQUEIDENTIFIER</span> <span class="keyword">PRIMARY KEY DEFAULT</span> <span class="function">NEWID</span>(),
+    data   <span class="keyword">NVARCHAR</span>(<span class="number">100</span>)
+);</pre>
+            </div>
+
+            <h2><i data-lucide="link"></i> Foreign Key</h2>
+            <p>A Foreign Key is a column that references the Primary Key of another table, establishing a relationship between the two tables.</p>
+
+            <div class="key-points">
+                <h4>Foreign Key Rules</h4>
+                <ul>
+                    <li>References the Primary Key of another table</li>
+                    <li>Ensures <strong>referential integrity</strong> - no orphan records</li>
+                    <li>Can be NULL (if relationship is optional)</li>
+                    <li>Can have duplicate values (for many side of 1:N)</li>
+                    <li>Values must match existing values in referenced table</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- Create tables with Foreign Key relationship</span>
+<span class="keyword">CREATE TABLE</span> departments (
+    dept_id   <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    dept_name <span class="keyword">NVARCHAR</span>(<span class="number">50</span>) <span class="keyword">NOT NULL</span>
+);
+
+<span class="keyword">CREATE TABLE</span> employees (
+    emp_id    <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    emp_name  <span class="keyword">NVARCHAR</span>(<span class="number">100</span>) <span class="keyword">NOT NULL</span>,
+    dept_id   <span class="keyword">INT</span>,  <span class="comment">-- Foreign Key column</span>
+    <span class="keyword">FOREIGN KEY</span> (dept_id) <span class="keyword">REFERENCES</span> departments(dept_id)
+);
+
+<span class="comment">-- Foreign Key with ON DELETE/UPDATE actions</span>
+<span class="keyword">CREATE TABLE</span> orders (
+    order_id     <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    customer_id  <span class="keyword">INT</span> <span class="keyword">NOT NULL</span>,
+    order_date   <span class="keyword">DATETIME2</span>,
+    <span class="keyword">FOREIGN KEY</span> (customer_id) 
+        <span class="keyword">REFERENCES</span> customers(customer_id)
+        <span class="keyword">ON DELETE</span> <span class="keyword">NO ACTION</span>       <span class="comment">-- Prevent deletion</span>
+        <span class="keyword">ON UPDATE</span> <span class="keyword">CASCADE</span>          <span class="comment">-- Update if PK changes</span>
+);</pre>
+            </div>
+
+            <h2><i data-lucide="trash-2"></i> Referential Actions</h2>
+            <p>When the referenced (parent) row is updated or deleted, you can specify what happens to dependent (child) rows:</p>
+
+            <div class="key-points">
+                <h4>Available Actions</h4>
+                <ul>
+                    <li><strong>NO ACTION</strong> - Raise error if child records exist (default)</li>
+                    <li><strong>CASCADE</strong> - Delete/update child records automatically</li>
+                    <li><strong>SET NULL</strong> - Set foreign key to NULL</li>
+                    <li><strong>SET DEFAULT</strong> - Set foreign key to its default value</li>
+                    <li><strong>RESTRICT</strong> - Prevent deletion/update of parent</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<pre><span class="comment">-- CASCADE example (deleting employee deletes related orders)</span>
+<span class="keyword">CREATE TABLE</span> orders (
+    order_id    <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    customer_id <span class="keyword">INT</span> <span class="keyword">NOT NULL</span>,
+    <span class="keyword">FOREIGN KEY</span> (customer_id) 
+        <span class="keyword">REFERENCES</span> customers(customer_id)
+        <span class="keyword">ON DELETE CASCADE</span>   <span class="comment">-- Delete orders when customer deleted</span>
+);
+
+<span class="comment">-- SET NULL example (when customer deleted, order has no customer)</span>
+<span class="keyword">CREATE TABLE</span> orders (
+    order_id    <span class="keyword">INT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,
+    customer_id <span class="keyword">INT</span> <span class="keyword">NULL</span>,
+    <span class="keyword">FOREIGN KEY</span> (customer_id) 
+        <span class="keyword">REFERENCES</span> customers(customer_id)
+        <span class="keyword">ON DELETE SET NULL</span>   <span class="comment">-- Set to NULL instead of delete</span>
+);</pre>
+            </div>
+
+            <h2><i data-lucide="box"></i> Primary Key vs Unique Constraint</h2>
+            <div class="key-points">
+                <h4>Comparison</h4>
+                <ul>
+                    <li><strong>Primary Key</strong> - One per table, cannot be NULL, creates clustered index by default</li>
+                    <li><strong>Unique Constraint</strong> - Multiple allowed, can be NULL, creates non-clustered index</li>
+                </ul>
+            </div>
+
+            <div class="tip-box">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <p><strong>Tip:</strong> Use IDENTITY columns (auto-increment integers) for primary keys in most cases. They're simple, fast, and guaranteed unique. Use composite keys only when a natural key makes sense.</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <i data-lucide="alert-triangle"></i>
+                <div>
+                    <p><strong>Warning:</strong> Never use meaningful business data as a primary key (like SSN or email). These can change, creating update cascades. Use surrogate keys (ID) instead.</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="normalization.html" class="nav-btn"><i data-lucide="arrow-left"></i> Normalization</a>
+                <a href="constraints.html" class="nav-btn next">Constraints <i data-lucide="arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
